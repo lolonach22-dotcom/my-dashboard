@@ -1,0 +1,60 @@
+:root {
+  --background-dark: #0f1013;
+  --surface-dark: #17181c;
+  --border-muted: #26282e;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --color-accent: #2563eb;
+  --color-positive: #10b981;
+}
+
+body {
+  background-color: var(--background-dark);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 16px;
+}
+
+.container {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.card, .welcome-card {
+  background-color: var(--surface-dark);
+  border: 1px solid var(--border-muted);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.amount {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.status-indicator {
+  color: var(--color-positive);
+  font-size: 13px;
+}
+
+.alert-box {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-muted);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+.btn-primary {
+  width: 100%;
+  background-color: var(--color-accent);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}

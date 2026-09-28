@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korea Private Bank - Client Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">KPB • Korea Private Bank</div>
+        <div class="user-badge">Client Portal</div>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <div class="container">
+        
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h2>Welcome Back, Respected Account Holder</h2>
+            <p class="account-meta">Premium Checking Account | Account Number: *******4920</p>
+        </div>
+
+        <!-- Financial Summary Grid -->
+        <div class="dashboard-grid">
+            
+            <!-- Balance Card -->
+            <div class="card balance-card">
+                <h3>Available Balance</h3>
+                <!-- The numerical amount below can be changed dynamically later -->
+                <div class="amount">$75,420.00</div>
+                <p class="status-indicator">● Active & Secured</p>
+            </div>
+
+            <!-- Quick Actions / Request Fee Block -->
+            <div class="card action-card">
+                <h3>Account Settlement Actions</h3>
+                <p class="instruction-text">To initiate an outbound wire transfer or request a structural withdrawal, click below to verify systemic status.</p>
+                
+                <!-- Notice Alert Block -->
+                <div class="alert-box" id="feeNotice">
+                    <strong>Administrative Note:</strong> Account settlements may require a regulatory processing fee to be reconciled before clearance.
+                </div>
+
+                <button class="btn-primary" onclick="alert('System Notice: Please contact your dedicated account administrator to clear processing fees before final withdrawal approval.')">
+                    Request Clearance & Withdrawal
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
