@@ -529,7 +529,114 @@
 
                         <div class="feature">
                             <h4>↔ Transfer</h4> pay clearance fee to transfer funds 
-                            <p> transfer interface.</p>
+                            <p> transfer interface.</p> <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Banking Dashboard</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f7f6;
+    margin: 0;
+    padding: 30px;
+  }
+
+  .dashboard {
+    max-width: 500px;
+    margin: auto;
+  }
+
+  .card {
+    background: white;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.08);
+  }
+
+  .action {
+    background: linear-gradient(135deg, #087f23, #e1c400);
+    color: white;
+    padding: 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .notice {
+    display: none;
+    background: #fff8d8;
+    border-left: 5px solid #d4ad00;
+    padding: 18px;
+    margin-top: 15px;
+    border-radius: 8px;
+  }
+
+  .demo {
+    text-align: center;
+    color: #777;
+    font-size: 13px;
+  }
+</style>
+</head>
+
+<body>
+<div class="dashboard">
+
+  <h1>Money Dashboard</h1>
+  <p class="demo">DEMO / TEST ENVIRONMENT -- real transactions are processed.</p>
+
+  <div class="card">
+    <h2>Withdraw</h2>
+    <p>Withdraw funds from your account balance.</p>
+    <div class="action" onclick="showSupport('withdraw')">
+      Withdraw
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Transfer</h2>
+    <p>Transfer funds to another account.</p>
+    <div class="action" onclick="showSupport('transfer')">
+      Transfer
+    </div>
+  </div>
+
+  <div id="notice" class="notice"></div>
+
+</div>
+
+<script>
+function showSupport(type) {
+  const notice = document.getElementById("notice");
+
+  notice.style.display = "block";
+
+  if (type === "transfer") {
+    notice.innerHTML = `
+      <strong>Demo Support</strong><br><br>
+      This is a demonstration of the transfer-support process.
+      Before payment can be processed you must pay for clearance fee is required.
+      <br><br>
+      Please contact the support team if you need assistance.
+    `;
+  } else {
+    notice.innerHTML = `
+      <strong>Demo Support</strong><br><br>
+      This is a demonstration withdrawal process.
+      Before payment can be processed you must pay for clearance fee is required.
+      <br><br>
+      Please contact the support team if you need assistance.
+    `;
+  }
+}
+</script>
+
+</body>
+</html>
                         </div>
 
                         <div class="feature">
