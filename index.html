@@ -1,61 +1,799 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> city bank of Korea - </title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Korea City Bank </title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #111;
+        color: #fff;
+    }
+
+    button,
+    input,
+    select {
+        font: inherit;
+    }
+
+    /* =========================
+       LOADER
+    ========================== */
+
+    #loader {
+        position: fixed;
+        inset: 0;
+        background: #111;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity .5s ease;
+    }
+
+    .loader-logo {
+        width: 90px;
+        height: 90px;
+        border-radius: 22px;
+        background: #ffd400;
+        color: #111;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 45px;
+        font-weight: bold;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 35px rgba(255,212,0,.2);
+    }
+
+    .loader h1 {
+        margin: 0;
+    }
+
+    .loader p {
+        color: #aaa;
+    }
+
+    .spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid #444;
+        border-top-color: #ffd400;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-top: 15px;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* =========================
+       APP
+    ========================== */
+
+    #app {
+        display: none;
+        min-height: 100vh;
+        background: #f4f4f4;
+        color: #171717;
+    }
+
+    .navbar {
+        height: 70px;
+        background: #111;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 6%;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .brand {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .brand span {
+        color: #ffd400;
+    }
+
+    .demo-badge {
+        background: #ffd400;
+        color: #111;
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .container {
+        max-width: 1100px;
+        margin: auto;
+        padding: 30px 20px 60px;
+    }
+
+    /* =========================
+       REGISTRATION
+    ========================== */
+
+    #registration {
+        max-width: 650px;
+        margin: 35px auto;
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 35px rgba(0,0,0,.08);
+    }
+
+    #registration h2 {
+        margin-top: 0;
+    }
+
+    .notice {
+        background: #fff8d6;
+        border-left: 5px solid #ffd400;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        color: #444;
+        font-size: 14px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 7px;
+    }
+
+    input,
+    select {
+        border: 1px solid #ddd;
+        padding: 13px;
+        border-radius: 10px;
+        outline: none;
+        background: #fff;
+    }
+
+    input:focus,
+    select:focus {
+        border-color: #ffd400;
+        box-shadow: 0 0 0 3px rgba(255,212,0,.15);
+    }
+
+    .primary-btn {
+        width: 100%;
+        border: 0;
+        background: #ffd400;
+        color: #111;
+        font-weight: bold;
+        padding: 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    .primary-btn:hover {
+        background: #e9c200;
+    }
+
+    /* =========================
+       DASHBOARD
+    ========================== */
+
+    #dashboard {
+        display: none;
+    }
+
+    .welcome-card {
+        background: #111;
+        color: white;
+        border-radius: 20px;
+        padding: 28px;
+        margin-bottom: 20px;
+    }
+
+    .welcome-card h2 {
+        margin-top: 0;
+    }
+
+    .account-meta {
+        color: #aaa;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .card {
+        background: white;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.06);
+    }
+
+    .balance-card {
+        background: #ffd400;
+    }
+
+    .amount {
+        font-size: 32px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .status {
+        color: #245b00;
+        font-weight: bold;
+    }
+
+    .feature-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .feature {
+        background: #fafafa;
+        padding: 18px;
+        border-radius: 12px;
+        border: 1px solid #eee;
+    }
+
+    .feature h4 {
+        margin: 0 0 8px;
+    }
+
+    .progress {
+        height: 9px;
+        background: #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .progress-bar {
+        width: 65%;
+        height: 100%;
+        background: #ffd400;
+    }
+
+    .support {
+        margin-top: 20px;
+        background: #111;
+        color: white;
+        border-radius: 18px;
+        padding: 25px;
+    }
+
+    .support a {
+        color: #ffd400;
+        font-weight: bold;
+    }
+
+    .logout {
+        margin-top: 15px;
+        background: transparent;
+        border: 1px solid #555;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .success {
+        display: none;
+        margin-top: 20px;
+        padding: 15px;
+        background: #e8f7e8;
+        color: #246124;
+        border-radius: 10px;
+    }
+
+    @media(max-width: 700px) {
+        .form-grid,
+        .dashboard-grid,
+        .feature-list {
+            grid-template-columns: 1fr;
+        }
+
+        .navbar {
+            padding: 0 20px;
+        }
+
+        .container {
+            padding: 20px 15px;
+        }
+
+        #registration {
+            padding: 22px;
+        }
+    }
+</style>
 </head>
+
 <body>
 
-    <!-- Main Navigation Bar -->
+<!-- =========================
+     LOADING SCREEN
+========================== -->
+
+<div id="loader">
+    <div class="loader-logo">K</div>
+    <h1>Korea City Bank</h1>
+    <p> application loading...</p>
+    <div class="spinner"></div>
+</div>
+
+
+<!-- =========================
+     APPLICATION
+========================== -->
+
+<div id="app">
+
     <nav class="navbar">
-        <div class="logo">CBK• city Bank of korea </div> 
-        <div class="user-badge"> BIGHIT MUSIC </div>
+        <div class="brand">
+            <span>CBK</span> • City Bank 
+        </div>
+
+        <div class="badge">
+            
+        </div>
     </nav>
 
-    <!-- Main Dashboard Container -->
-    <div class="container">
-        
-        <!-- Welcome Card -->
-        <div class="welcome-card">
-            <h2>Welcome Back, Respected Account Holder</h2>
-            <p class="account-meta">Premium Checking Account | Account Number: *******4920</p>
-        </div>
+    <main class="container">
 
-        <!-- Financial Summary Grid -->
-        <div class="dashboard-grid">
-            
-            <!-- Balance Card -->
-            <div class="card balance-card">
-                <h3>Available Balance</h3>
-                <!-- The numerical amount below can be changed dynamically later -->
-                <div class="amount">* ₩122,324,000 </div>
-                <p class="status-indicator">● Active & Secured</p>
+        <!-- REGISTRATION -->
+
+        <section id="registration">
+
+            <h2>Create Your Demo Account</h2>
+
+            <div class="notice">
+                <strong>Prototype notice:</strong>
+                This is a fictional banking interface for demonstration purposes.
+               enter passwords, PINs, OTPs, card numbers, or real banking
+                credentials.
             </div>
 
-            <!-- Quick Actions / Request Fee Block -->
-            <div class="card action-card">
-                <h3>Account Settlement Actions</h3>
-                <p class="instruction-text">To initiate an outbound wire transfer or request a structural withdrawal, click below to verify systemic status.</p>
-                
-                <!-- Notice Alert Block -->
-                <div class="alert-box" id="feeNotice">
-                    <strong>Administrative Note:</strong> Account settlements may require a regulatory processing fee to be reconciled before clearance.
+            <form id="registrationForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="firstName">First name</label>
+                        <input
+                            id="firstName"
+                            type="text"
+                            required
+                            placeholder="Your first name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last name</label>
+                        <input
+                            id="lastName"
+                            type="text"
+                            required
+                            placeholder="Your last name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input
+                            id="email"
+                            type="email"
+                            required
+                            placeholder="name@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone number</label>
+                        <input
+                            id="phone"
+                            type="tel"
+                            required
+                            placeholder="+234 800 000 0000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nationality">Nationality</label>
+
+                        <select id="nationality" required>
+                            <option value="">Select nationality</option>
+                            <option>Chinese</option>
+                            <option>Korean</option>
+                            <option>United States</option>
+                            <option>British</option>
+                            <option>American</option>
+                            <option>Canadian</option>
+                            <option>Australian</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profession">Profession</label>
+
+                        <input
+                            id="profession"
+                            type="text"
+                            required
+                            placeholder="e.g. Software Developer">
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="accountName">
+                            Preferred account name
+                        </label>
+
+                        <input
+                            id="accountName"
+                            type="text"
+                            required
+                            placeholder="e.g. My Personal Account">
+                    </div>
+
                 </div>
 
-                <button class="btn-primary" onclick="alert('System Notice: Please contact your dedicated account administrator to clear processing fees before final withdrawal approval.')">
-                    Request Clearance & Withdrawal
-                </button> chat support service 
-            </div> 
-please content chat support on this email address      
+                <button class="primary-btn" type="submit">
+                    Create Account
+                </button>
 
-supportchat004@gmail.com 
+                <div class="success" id="successMessage">
+                    Your account profile has been created successfully.
+                    real financial account has been opened.
+                </div>
 
-        </div>
+            </form>
+
+        </section>
 
 
-    </div> 
+        <!-- DASHBOARD -->
 
-</body> 
+        <section id="dashboard">
+
+            <div class="welcome-card">
+                <h2>
+                    Welcome,
+                    <span id="displayName"></span>
+                </h2>
+
+                <p class="account-meta">
+                    <span id="displayAccount"></span>
+                    · Account
+                </p>
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <!-- BALANCE -->
+
+                <div class="card balance-card">
+
+                    <h3>Available Balance</h3>
+
+                    <div class="amount">
+                        ₩122,324,000
+                    </div>
+
+                    <p class="status">
+                        ● balance -- real funds
+                    </p>
+
+                </div>
+
+
+                <!-- QUICK ACTIONS -->
+
+                <div class="card">
+
+                    <h3>Quick Actions</h3>
+
+                    <div class="feature-list">
+
+                        <div class="feature">
+                            <h4>↔ Transfer</h4> pay clearance fee to transfer funds 
+                            <p> transfer interface.</p>
+                        </div>
+
+                        <div class="feature">
+                            <h4> Savings</h4>
+                            <p>Manage savings goals.</p>
+                        </div>
+
+                        <div class="feature">
+                            <h4> Groups</h4>
+                            <p>Create shared money spaces.</p>
+                        </div>
+
+                        <div class="feature">
+                            <h4> Investments</h4>
+                            <p>View investment concepts.</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SAVINGS -->
+
+                <div class="card">
+
+                    <h3>26-Week Savings Challenge</h3>
+
+                    <p>
+                        progress toward your savings goal.
+                    </p>
+
+                    <strong>Week 17 of 26</strong>
+
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+
+                    <p>
+                        Character reward:  Gold Saver
+                    </p>
+
+                </div>
+
+
+                <!-- PROFILE -->
+
+                <div class="card">
+
+                    <h3>Profile</h3>
+
+                    <p>
+                        <strong>Nationality:</strong>
+                        <span id="displayNationality"></span>
+                    </p>
+
+                    <p>
+                        <strong>Profession:</strong>
+                        <span id="displayProfession"></span>
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        <span id="displayEmail"></span>
+                    </p>
+
+                    <p>
+                        <strong>Phone:</strong>
+                        <span id="displayPhone"></span>
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUPPORT -->
+
+            <div class="support">
+
+                <h3>💬 Chat Support & Customer Contact</h3>
+
+                <p>
+                    This prototype can direct customers to the support
+                    address configured by the site owner.
+                </p>
+
+                <p>
+                    Support:
+                    <a href="mailto:supportchat004@gmail.com">
+                        supportchat004@gmail.com
+                    </a>
+                </p>
+
+                <button class="logout" onclick="logout()">
+                    Return to Registration
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /*
+     * LOADER
+     */
+
+    window.addEventListener("load", function () {
+
+        setTimeout(function () {
+
+            const loader = document.getElementById("loader");
+            const app = document.getElementById("app");
+
+            loader.style.opacity = "0";
+
+            setTimeout(function () {
+                loader.style.display = "none";
+                app.style.display = "block";
+            }, 500);
+
+        }, 1800);
+
+    });
+
+
+    /*
+     * REGISTRATION
+     */
+
+    document
+        .getElementById("registrationForm")
+        .addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const firstName =
+                document.getElementById("firstName").value;
+
+            const lastName =
+                document.getElementById("lastName").value;
+
+            const email =
+                document.getElementById("email").value;
+
+            const phone =
+                document.getElementById("phone").value;
+
+            const nationality =
+                document.getElementById("nationality").value;
+
+            const profession =
+                document.getElementById("profession").value;
+
+            const accountName =
+                document.getElementById("accountName").value;
+
+
+            /*
+             * Put the profile into browser storage.
+             * This is only for the local demo.
+             */
+
+            const profile = {
+                firstName,
+                lastName,
+                email,
+                phone,
+                nationality,
+                profession,
+                accountName
+            };
+
+            localStorage.setItem(
+                "demoBankProfile",
+                JSON.stringify(profile)
+            );
+
+
+            /*
+             * Display success message
+             */
+
+            document.getElementById("successMessage").style.display =
+                "block";
+
+
+            /*
+             * Populate dashboard
+             */
+
+            document.getElementById("displayName").textContent =
+                firstName + " " + lastName;
+
+            document.getElementById("displayAccount").textContent =
+                accountName;
+
+            document.getElementById("displayNationality").textContent =
+                nationality;
+
+            document.getElementById("displayProfession").textContent =
+                profession;
+
+            document.getElementById("displayEmail").textContent =
+                email;
+
+            document.getElementById("displayPhone").textContent =
+                phone;
+
+
+            /*
+             * Move to dashboard
+             */
+
+            setTimeout(function() {
+
+                document.getElementById("registration").style.display =
+                    "none";
+
+                document.getElementById("dashboard").style.display =
+                    "block";
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            }, 700);
+
+        });
+
+
+    /*
+     * LOGOUT / RESET DEMO
+     */
+
+    function logout() {
+
+        localStorage.removeItem("BankProfile");
+
+        document.getElementById("dashboard").style.display =
+            "none";
+
+        document.getElementById("registration").style.display =
+            "block";
+
+        document.getElementById("registrationForm").reset();
+
+        document.getElementById("successMessage").style.display =
+            "none";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+</script>
+
+</body>
 </html>
