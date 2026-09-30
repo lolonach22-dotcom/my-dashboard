@@ -1,58 +1,164 @@
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-app.use(express.static('public'));
-
-// Connect to MongoDB Atlas
-const MONGO_URI = "mongodb+srv://lolonach22_db_user:BLK6krPWE1w7xI88@cluster0.5xitibz.mongodb.net/koreacitybank?retryWrites=true&w=majority";
+// MongoDB Connection using your Atlas credentials
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://lolonach22_db_user:BLK6krPWE1w7xI88@cluster0.mongodb.net/banking_db?retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('Connected to MongoDB Atlas successfully!'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .then(() => console.log('✅ Connected to MongoDB Atlas successfully'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Schema for user account data sync
+// Schemas with case-insensitivity and trimming to fix cross-device login bugs
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true },
-  data: Object
-});
-const UserAccount = mongoose.model('UserAccount', userSchema);
-
-io.on('connection', (socket) => {
-  console.log('A user connected via WebSocket');
-
-  socket.on('get-user-data', async ({ username }) => {
-    try {
-      const userDoc = await UserAccount.findOne({ username });
-      socket.emit('load-user-data', userDoc ? userDoc.data : null);
-    } catch (e) {
-      console.error(e);
-    }
-  });
-
-  socket.on('save-user-data', async ({ username, data }) => {
-    try {
-      await UserAccount.findOneAndUpdate(
-        { username },
-        { data },
-        { upsert: true, new: true }
-      );
-      socket.broadcast.emit('user-data-updated', { username, data });
-    } catch (e) {
-      console.error(e);
-    }
-  });
+  username: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  pin: { type: String, required: true, trim: true },
+  balance: { type: Number, default: 0 },
+  isAdmin: { type: Boolean, default: false }
 });
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const transactionSchema = new mongoose.Schema({
+  userId: mongoose.Schema.Types.ObjectId,
+  username: { type: String, lowercase: true, trim: true },
+  type: String, // 'Credit' or 'Debit'
+  amount: Number,
+  description: String,
+  date: { type: Date, default: Date.now }
+});
+
+const User = mongoose.model('User', userSchema);
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Serve static files (like style.css) from the root folder
+app.use(express.static(path.join(__dirname)));
+
+// Support email destination
+const SUPPORT_EMAIL = "support@yourbankdomain.com";
+
+// Routes for Static HTML Files
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Handle Login Action (Sanitized for cross-device consistency)
+app.post('/login', async (req, res) => {
+    const username = req.body.username ? req.body.username.trim().toLowerCase() : '';
+    const pin = req.body.pin ? req.body.pin.trim() : '';
+    
+    try {
+        const user = await User.findOne({ username, pin });
+        if (!user) {
+            return res.send(`<h3>Invalid credentials. <a href="/">Try Again</a></h3>`);
+        }
+        
+        if (user.isAdmin) {
+            res.redirect(`/admin-panel?user=${user.username}`);
+        } else {
+            res.redirect(`/user-dashboard?user=${user.username}`);
+        }
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
+
+// Handle Registration Action (Sanitized)
+app.post('/register', async (req, res) => {
+    const username = req.body.username ? req.body.username.trim().toLowerCase() : '';
+    const pin = req.body.pin ? req.body.pin.trim() : '';
+
+    if (!username || !pin) {
+        return res.send(`<h3>Username and PIN are required. <a href="/">Back</a></h3>`);
+    }
+
+    try {
+        const existing = await User.findOne({ username });
+        if (existing) {
+            return res.send(`<h3>Username already taken. <a href="/">Back</a></h3>`);
+        }
+        
+        await User.create({ username, pin, balance: 0, isAdmin: false });
+        res.send(`<h3>Account created successfully! <a href="/">Login now</a></h3>`);
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
+
+// Fetch Client Data API for Dashboard
+app.get('/api/user-data', async (req, res) => {
+    const username = req.query.user ? req.query.user.trim().toLowerCase() : '';
+    if (!username) return res.status(400).json({ error: 'Unauthorized' });
+
+    try {
+        const user = await User.findOne({ username });
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const transactions = await Transaction.find({ username }).sort({ date: -1 });
+        res.json({ username: user.username, balance: user.balance, transactions, supportEmail: SUPPORT_EMAIL });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Fetch Admin Data API
+app.get('/api/admin-data', async (req, res) => {
+    try {
+        const users = await User.find({ isAdmin: false });
+        const transactions = await Transaction.find().sort({ date: -1 }).limit(30);
+        res.json({ users, transactions });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Admin Actions
+app.post('/admin/update-balance', async (req, res) => {
+    const { userId, newBalance } = req.body;
+    await User.findByIdAndUpdate(userId, { balance: parseFloat(newBalance) });
+    res.redirect('back');
+});
+
+app.post('/admin/send-transaction', async (req, res) => {
+    const { username, type, amount, description } = req.body;
+    const cleanUsername = username.trim().toLowerCase();
+    const val = parseFloat(amount);
+    
+    await Transaction.create({ username: cleanUsername, type, amount: val, description });
+
+    const user = await User.findOne({ username: cleanUsername });
+    if (user) {
+        user.balance = type === 'Credit' ? user.balance + val : user.balance - val;
+        await user.save();
+    }
+    res.redirect('back');
+});
+
+app.post('/admin/edit-transaction', async (req, res) => {
+    const { txId, newDescription } = req.body;
+    await Transaction.findByIdAndUpdate(txId, { description: newDescription });
+    res.redirect('back');
+});
+
+// Seed default admin
+async function seedAdmin() {
+    const adminExists = await User.findOne({ isAdmin: true });
+    if (!adminExists) {
+        await User.create({
+            username: 'admin',
+            pin: 'admin123',
+            balance: 0,
+            isAdmin: true
+        });
+        console.log('👤 Default admin created: username -> admin / pin -> admin123');
+    }
+}
+
+app.listen(PORT, async () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    await seedAdmin();
 });
