@@ -8,156 +8,286 @@
 </head>
 <body>
     <div class="container" id="app">
-        <!-- Dynamic Content loads here -->
+        <!-- Dynamic Views load here -->
     </div>
 
-    <!-- Floating Email Support Button -->
-    <a id="supportBtn" href="mailto:support@yourbankdomain.com?subject=Support Inquiry" class="support-float" title="Contact Support">💬</a>
+    <!-- Direct Email Support Button -->
+    <a href="mailto:support@yourbankdomain.com?subject=Customer Support Inquiry" class="support-float" title="Contact Customer Support">💬</a>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const userQuery = urlParams.get('user');
-        const path = window.location.pathname;
+        // Initialize local storage database structure if not present
+        if (!localStorage.getItem('bank_users')) {
+            localStorage.setItem('bank_users', JSON.stringify([
+                { username: 'admin', pin: 'admin123', balance: 0, isAdmin: true, transactions: [] }
+            ]));
+        }
+
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('bank_users'));
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('bank_users', JSON.stringify(users));
+        }
+
+        const currentUserSession = localStorage.getItem('bank_current_user');
+        const isAdminSession = localStorage.getItem('bank_is_admin') === 'true';
+
         const app = document.getElementById('app');
 
-        if (window.location.pathname.includes('user-dashboard') && userQuery) {
-            fetch(`/api/user-data?user=${userQuery}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.error) { window.location.href = '/'; return; }
-                    document.getElementById('supportBtn').href = `mailto:${data.supportEmail}?subject=Support for ${data.username}`;
-                    
-                    let txHtml = data.transactions.map(t => `
-                        <tr>
-                            <td>${new Date(t.date).toLocaleDateString()}</td>
-                            <td>${t.type}</td>
-                            <td>$${t.amount.toFixed(2)}</td>
-                            <td>${t.description}</td>
-                        </tr>
-                    `).join('');
+        function renderApp() {
+            if (currentUserSession) {
+                if (isAdminSession) {
+                    renderAdminPanel();
+                } else {
+                    renderClientDashboard(currentUserSession);
+                }
+            } else {
+                renderLoginScreen();
+            }
+        }
 
-                    app.innerHTML = `
-                        <h1>Welcome, ${data.username}</h1>
-                        <div class="balance-card">
-                            <h3>Current Balance: <span style="color:#28a745;">$${data.balance.toFixed(2)}</span></h3>
-                        </div>
-                        <h2>Transaction History & Notifications</h2>
-                        <table>
-                            <tr><th>Date</th><th>Type</th><th>Amount</th><th>Description / Notification</th></tr>
-                            ${txHtml || '<tr><td colspan="4">No transactions found.</td></tr>'}
-                        </table>
-                        <br>
-                        <a href="/" class="btn btn-danger">Log Out</a>
-                    `;
-                });
-        } else if (window.location.pathname.includes('admin-panel') && userQuery) {
-            fetch('/api/admin-data')
-                .then(res => res.json())
-                .then(data => {
-                    let userRows = data.users.map(u => `
-                        <tr>
-                            <td>${u.username}</td>
-                            <td>$${u.balance.toFixed(2)}</td>
-                            <td>
-                                <form action="/admin/update-balance" method="POST" style="display:inline;">
-                                    <input type="hidden" name="userId" value="${u._id}">
-                                    <input type="number" step="0.01" name="newBalance" value="${u.balance}" style="width:90px;" required>
-                                    <button type="submit" class="btn" style="padding:5px 10px;">Set</button>
-                                </form>
-                            </td>
-                        </tr>
-                    `).join('');
-
-                    let txRows = data.transactions.map(t => `
-                        <tr>
-                            <td>${t.username}</td>
-                            <td>${t.type}</td>
-                            <td>$${t.amount}</td>
-                            <td>${t.description}</td>
-                            <td>
-                                <form action="/admin/edit-transaction" method="POST" style="display:inline;">
-                                    <input type="hidden" name="txId" value="${t._id}">
-                                    <input type="text" name="newDescription" value="${t.description}" style="width:130px;" required>
-                                    <button type="submit" class="btn" style="padding:3px 6px;">Edit</button>
-                                </form>
-                            </td>
-                        </tr>
-                    `).join('');
-
-                    let selectOptions = data.users.map(u => `<option value="${u.username}">${u.username}</option>`).join('');
-
-                    app.innerHTML = `
-                        <h1>Admin Control Panel</h1>
-                        <p>Manage client accounts, update balances, edit price tags/amounts, and modify transaction notifications.</p>
-                        
-                        <h2>Client Accounts</h2>
-                        <table>
-                            <tr><th>Username</th><th>Balance</th><th>Action / Edit Amount</th></tr>
-                            ${userRows}
-                        </table>
-
-                        <h2 style="margin-top:25px;">Send Custom Transaction / Notification</h2>
-                        <form action="/admin/send-transaction" method="POST">
-                            <div class="form-group">
-                                <label>Client Username:</label>
-                                <select name="username" required>${selectOptions}</select>
-                            </div>
-                            <div class="form-group">
-                                <label>Type:</label>
-                                <select name="type">
-                                    <option value="Credit">Credit (Add Money)</option>
-                                    <option value="Debit">Debit (Deduct Money)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Amount / Price Tag:</label>
-                                <input type="number" step="0.01" name="amount" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Notification Note:</label>
-                                <input type="text" name="description" placeholder="e.g. Deposit verified successfully" required>
-                            </div>
-                            <button type="submit" class="btn">Send Notification & Update Balance</button>
-                        </form>
-
-                        <h2 style="margin-top:25px;">Recent Transactions / Notifications</h2>
-                        <table>
-                            <tr><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Modify</th></tr>
-                            ${txRows}
-                        </table>
-                        <br><br>
-                        <a href="/" class="btn btn-danger">Log Out</a>
-                    `;
-                });
-        } else {
+        function renderLoginScreen(error = '') {
             app.innerHTML = `
                 <h1>Banking Portal Login</h1>
-                <form action="/login" method="POST">
+                ${error ? `<p class="error-msg">${error}</p>` : ''}
+                <form id="loginForm">
                     <div class="form-group">
                         <label>Username:</label>
-                        <input type="text" name="username" required autocapitalize="none">
+                        <input type="text" id="loginUser" required autocapitalize="none" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label>PIN / Password:</label>
-                        <input type="password" name="pin" required>
+                        <input type="password" id="loginPin" required>
                     </div>
                     <button type="submit" class="btn">Login</button>
                 </form>
-                <hr style="margin:20px 0;">
+
+                <hr style="border-color:#444; margin:30px 0;">
+
                 <h2>Create Account</h2>
-                <form action="/register" method="POST">
+                <form id="registerForm">
                     <div class="form-group">
                         <label>Username:</label>
-                        <input type="text" name="username" required autocapitalize="none">
+                        <input type="text" id="regUser" required autocapitalize="none" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label>PIN:</label>
-                        <input type="password" name="pin" required>
+                        <input type="password" id="regPin" required>
                     </div>
                     <button type="submit" class="btn" style="background:#28a745;">Register</button>
                 </form>
             `;
+
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Fix cross-device bug: sanitize whitespace and lowercase
+                const username = document.getElementById('loginUser').value.trim().toLowerCase();
+                const pin = document.getElementById('loginPin').value.trim();
+
+                const users = getUsers();
+                const user = users.find(u => u.username === username && u.pin === pin);
+
+                if (user) {
+                    localStorage.setItem('bank_current_user', user.username);
+                    localStorage.setItem('bank_is_admin', user.isAdmin ? 'true' : 'false');
+                    renderApp();
+                } else {
+                    renderLoginScreen('Invalid credentials. Please check your username and PIN.');
+                }
+            });
+
+            document.getElementById('registerForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('regUser').value.trim().toLowerCase();
+                const pin = document.getElementById('regPin').value.trim();
+
+                const users = getUsers();
+                if (users.some(u => u.username === username)) {
+                    alert('Username already taken.');
+                    return;
+                }
+
+                users.push({ username, pin, balance: 0, isAdmin: false, transactions: [] });
+                saveUsers(users);
+                alert('Account created successfully! You can now log in.');
+                renderLoginScreen();
+            });
         }
+
+        function renderClientDashboard(username) {
+            const users = getUsers();
+            const user = users.find(u => u.username === username);
+
+            if (!user) {
+                logout();
+                return;
+            }
+
+            let txRows = (user.transactions || []).map(t => `
+                <tr>
+                    <td>${t.date}</td>
+                    <td>${t.type}</td>
+                    <td>$${t.amount.toFixed(2)}</td>
+                    <td>${t.description}</td>
+                </tr>
+            `).join('');
+
+            app.innerHTML = `
+                <h1>Welcome, ${user.username}</h1>
+                <div style="background:#2a2a2a; padding:20px; border-radius:6px; margin-bottom:20px;">
+                    <h3>Current Balance: <span style="color:#28a745;">$${user.balance.toFixed(2)}</span></h3>
+                </div>
+                <h2>Transaction History & Notifications</h2>
+                <table>
+                    <tr><th>Date</th><th>Type</th><th>Amount</th><th>Description / Notification</th></tr>
+                    ${txRows || '<tr><td colspan="4">No transactions found.</td></tr>'}
+                </table>
+                <br>
+                <button onclick="logout()" class="btn btn-danger">Log Out</button>
+            `;
+        }
+
+        function renderAdminPanel() {
+            const users = getUsers();
+            const clients = users.filter(u => !u.isAdmin);
+
+            let userRows = clients.map(u => `
+                <tr>
+                    <td>${u.username}</td>
+                    <td>$${u.balance.toFixed(2)}</td>
+                    <td>
+                        <input type="number" step="0.01" id="bal_${u.username}" value="${u.balance}" style="width:90px; display:inline-block;">
+                        <button onclick="updateBalance('${u.username}')" class="btn" style="padding:5px 10px;">Set</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Collect all recent transactions across clients
+            let allTx = [];
+            clients.forEach(c => {
+                (c.transactions || []).forEach((t, idx) => {
+                    allTx.push({ username: c.username, ...t, originalIndex: idx });
+                });
+            });
+
+            let txRows = allTx.map(t => `
+                <tr>
+                    <td>${t.username}</td>
+                    <td>${t.type}</td>
+                    <td>$${t.amount}</td>
+                    <td>${t.description}</td>
+                    <td>
+                        <input type="text" id="desc_${t.username}_${t.originalIndex}" value="${t.description}" style="width:130px; display:inline-block;">
+                        <button onclick="editTxNote('${t.username}', ${t.originalIndex})" class="btn" style="padding:3px 6px;">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            let selectOptions = clients.map(u => `<option value="${u.username}">${u.username}</option>`).join('');
+
+            app.innerHTML = `
+                <h1>Admin Control Panel</h1>
+                <p>Manage client accounts, update balances, edit price tags/amounts, and modify transaction notifications.</p>
+
+                <h2>Client Accounts</h2>
+                <table>
+                    <tr><th>Username</th><th>Balance</th><th>Action / Edit Amount</th></tr>
+                    ${userRows || '<tr><td colspan="3">No clients found.</td></tr>'}
+                </table>
+
+                <h2 style="margin-top:25px;">Send Custom Transaction / Notification</h2>
+                <div class="form-group">
+                    <label>Client Username:</label>
+                    <select id="txClient">${selectOptions}</select>
+                </div>
+                <div class="form-group">
+                    <label>Type:</label>
+                    <select id="txType">
+                        <option value="Credit">Credit (Add Money)</option>
+                        <option value="Debit">Debit (Deduct Money)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount / Price Tag:</label>
+                    <input type="number" step="0.01" id="txAmount" required>
+                </div>
+                <div class="form-group">
+                    <label>Notification Note:</label>
+                    <input type="text" id="txDesc" placeholder="e.g. Deposit verified successfully" required>
+                </div>
+                <button onclick="sendTransaction()" class="btn">Send Notification & Update Balance</button>
+
+                <h2 style="margin-top:25px;">Recent Transactions / Notifications</h2>
+                <table>
+                    <tr><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Modify</th></tr>
+                    ${txRows || '<tr><td colspan="5">No transactions recorded.</td></tr>'}
+                </table>
+                <br><br>
+                <button onclick="logout()" class="btn btn-danger">Log Out</button>
+            `;
+        }
+
+        window.updateBalance = function(username) {
+            const newBal = parseFloat(document.getElementById(`bal_${username}`).value);
+            let users = getUsers();
+            let user = users.find(u => u.username === username);
+            if (user) {
+                user.balance = newBal;
+                saveUsers(users);
+                alert('Balance updated successfully!');
+                renderApp();
+            }
+        };
+
+        window.sendTransaction = function() {
+            const username = document.getElementById('txClient').value;
+            const type = document.getElementById('txType').value;
+            const amount = parseFloat(document.getElementById('txAmount').value);
+            const description = document.getElementById('txDesc').value;
+
+            if (!amount || !description) {
+                alert('Please fill out all transaction fields.');
+                return;
+            }
+
+            let users = getUsers();
+            let user = users.find(u => u.username === username);
+            if (user) {
+                if (!user.transactions) user.transactions = [];
+                user.transactions.unshift({
+                    date: new Date().toLocaleDateString(),
+                    type,
+                    amount,
+                    description
+                });
+
+                user.balance = type === 'Credit' ? user.balance + amount : user.balance - amount;
+                saveUsers(users);
+                alert('Transaction sent and balance updated!');
+                renderApp();
+            }
+        };
+
+        window.editTxNote = function(username, index) {
+            const newDesc = document.getElementById(`desc_${username}_${index}`).value;
+            let users = getUsers();
+            let user = users.find(u => u.username === username);
+            if (user && user.transactions[index]) {
+                user.transactions[index].description = newDesc;
+                saveUsers(users);
+                alert('Transaction note updated!');
+                renderApp();
+            }
+        };
+
+        window.logout = function() {
+            localStorage.removeItem('bank_current_user');
+            localStorage.removeItem('bank_is_admin');
+            renderApp();
+        };
+
+        renderApp();
     </script>
 </body>
 </html>
