@@ -1,203 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Korea City Bank</title>
-<!-- Include Socket.io for real-time sync across devices -->
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #e0e0e0; user-select: none; }
-    button, input, select { font: inherit; }
-    #loader { position: fixed; inset: 0; background: #121212; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity .5s ease; }
-    .loader-logo { width: 80px; height: 80px; border-radius: 20px; background: #ffd400; color: #121212; display: flex; justify-content: center; align-items: center; font-size: 40px; font-weight: bold; margin-bottom: 20px; }
-    .spinner { width: 28px; height: 28px; border: 3px solid #333; border-top-color: #ffd400; border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 20px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    #app { display: none; min-height: 100vh; background: #181818; color: #f0f0f0; }
-    .navbar { height: 65px; background: #1e1e1e; display: flex; align-items: center; justify-content: space-between; padding: 0 5%; border-bottom: 1px solid #2a2a2a; position: sticky; top: 0; z-index: 10; }
-    .brand { font-weight: bold; font-size: 18px; color: #fff; }
-    .brand span { color: #ffd400; }
-    .container { max-width: 600px; margin: auto; padding: 20px 16px 80px; }
-    .auth-box { background: #202020; border-radius: 16px; padding: 24px; border: 1px solid #2d2d2d; margin-top: 20px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-group { display: flex; flex-direction: column; }
-    .form-group.full { grid-column: 1 / -1; }
-    label { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: #aaa; }
-    input, select { border: 1px solid #333; padding: 12px; border-radius: 10px; outline: none; background: #181818; color: #fff; font-size: 14px; }
-    .primary-btn { width: 100%; border: 0; background: #ffd400; color: #121212; font-weight: bold; padding: 14px; border-radius: 10px; cursor: pointer; margin-top: 20px; font-size: 15px; }
-    .error-msg, .success { display: none; margin-top: 15px; padding: 12px; border-radius: 8px; font-size: 13px; }
-    .error-msg { background: rgba(220, 53, 69, 0.2); color: #ff8b94; border: 1px solid rgba(220, 53, 69, 0.4); }
-    .success { background: rgba(36, 97, 36, 0.2); color: #79ee79; border: 1px solid rgba(36, 97, 36, 0.4); }
-    .switch-auth { text-align: center; margin-top: 15px; font-size: 13px; color: #888; }
-    .switch-auth span { color: #ffd400; cursor: pointer; font-weight: bold; }
-    #dashboard { display: none; }
-    .card { background: #202020; border: 1px solid #2d2d2d; padding: 20px; border-radius: 16px; margin-bottom: 16px; }
-    .balance-card { background: linear-gradient(135deg, #ffd400, #e6be00); color: #121212; }
-    .amount { font-size: 34px; font-weight: 800; margin: 16px 0 4px; }
-    .logout { margin-top: 15px; background: transparent; border: 1px solid #444; color: #ccc; padding: 10px 16px; border-radius: 8px; cursor: pointer; width: 100%; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking Simulation Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container" id="app">
+        <!-- Dynamic Content loads here -->
+    </div>
 
-<div id="loader">
-    <div class="loader-logo">K</div>
-    <h1>Korea City Bank</h1>
-    <p>Loading secure environment...</p>
-    <div class="spinner"></div>
-</div>
+    <!-- Floating Email Support Button -->
+    <a id="supportBtn" href="mailto:support@yourbankdomain.com?subject=Support Inquiry" class="support-float" title="Contact Support">💬</a>
 
-<div id="app">
-    <nav class="navbar">
-        <div class="brand"><span>CBK</span> • City Bank Korea</div>
-    </nav>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const userQuery = urlParams.get('user');
+        const path = window.location.pathname;
+        const app = document.getElementById('app');
 
-    <main class="container">
-        <!-- REGISTRATION SECTION -->
-        <section id="registration" class="auth-box">
-            <h2>Create Your Account</h2>
-            <form id="registrationForm">
-                <div class="form-grid">
-                    <div class="form-group"><label>First name</label><input id="regFirstName" type="text" required></div>
-                    <div class="form-group"><label>Last name</label><input id="regLastName" type="text" required></div>
-                    <div class="form-group full"><label>Active Email address</label><input id="regEmail" type="email" required></div>
-                    <div class="form-group full"><label>Phone number</label><input id="regPhone" type="tel" required></div>
-                    <div class="form-group full"><label>Password</label><input id="regPassword" type="password" required></div>
-                </div>
-                <button class="primary-btn" type="submit">Create Account</button>
-                <div class="success" id="regSuccess">Account registered successfully! You can now log in.</div>
-                <div class="switch-auth">Already have an account? <span onclick="showLoginTab()">Log in here</span></div>
-            </form>
-        </section>
+        if (window.location.pathname.includes('user-dashboard') && userQuery) {
+            fetch(`/api/user-data?user=${userQuery}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) { window.location.href = '/'; return; }
+                    document.getElementById('supportBtn').href = `mailto:${data.supportEmail}?subject=Support for ${data.username}`;
+                    
+                    let txHtml = data.transactions.map(t => `
+                        <tr>
+                            <td>${new Date(t.date).toLocaleDateString()}</td>
+                            <td>${t.type}</td>
+                            <td>$${t.amount.toFixed(2)}</td>
+                            <td>${t.description}</td>
+                        </tr>
+                    `).join('');
 
-        <!-- LOGIN SECTION -->
-        <section id="loginSection" class="auth-box" style="display: none;">
-            <h2>Account Login</h2>
-            <form id="loginForm">
-                <div class="form-grid">
-                    <div class="form-group full"><label>Active Email address</label><input id="loginEmail" type="email" required></div>
-                    <div class="form-group full"><label>Phone number</label><input id="loginPhone" type="tel" required></div>
-                    <div class="form-group full"><label>Password</label><input id="loginPassword" type="password" required></div>
-                </div>
-                <button class="primary-btn" type="submit">Secure Login</button>
-                <div class="error-msg" id="loginError">Invalid credentials. Please verify your details.</div>
-                <div class="switch-auth">Don't have an account? <span onclick="showRegisterTab()">Create account</span></div>
-            </form>
-        </section>
+                    app.innerHTML = `
+                        <h1>Welcome, ${data.username}</h1>
+                        <div class="balance-card">
+                            <h3>Current Balance: <span style="color:#28a745;">$${data.balance.toFixed(2)}</span></h3>
+                        </div>
+                        <h2>Transaction History & Notifications</h2>
+                        <table>
+                            <tr><th>Date</th><th>Type</th><th>Amount</th><th>Description / Notification</th></tr>
+                            ${txHtml || '<tr><td colspan="4">No transactions found.</td></tr>'}
+                        </table>
+                        <br>
+                        <a href="/" class="btn btn-danger">Log Out</a>
+                    `;
+                });
+        } else if (window.location.pathname.includes('admin-panel') && userQuery) {
+            fetch('/api/admin-data')
+                .then(res => res.json())
+                .then(data => {
+                    let userRows = data.users.map(u => `
+                        <tr>
+                            <td>${u.username}</td>
+                            <td>$${u.balance.toFixed(2)}</td>
+                            <td>
+                                <form action="/admin/update-balance" method="POST" style="display:inline;">
+                                    <input type="hidden" name="userId" value="${u._id}">
+                                    <input type="number" step="0.01" name="newBalance" value="${u.balance}" style="width:90px;" required>
+                                    <button type="submit" class="btn" style="padding:5px 10px;">Set</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `).join('');
 
-        <!-- DASHBOARD SECTION -->
-        <section id="dashboard">
-            <div class="card">
-                <h2>Welcome, <span id="displayGreetingName"></span></h2>
-                <p>Email: <span id="displayEmail"></span></p>
-                <p>Phone: <span id="displayPhone"></span></p>
-            </div>
-            <div class="card balance-card">
-                <h3>Available Balance</h3>
-                <div class="amount" id="displayBalance">₩0.00</div>
-            </div>
-            <button class="logout" onclick="logout()">Log Out</button>
-        </section>
-    </main>
-</div>
+                    let txRows = data.transactions.map(t => `
+                        <tr>
+                            <td>${t.username}</td>
+                            <td>${t.type}</td>
+                            <td>$${t.amount}</td>
+                            <td>${t.description}</td>
+                            <td>
+                                <form action="/admin/edit-transaction" method="POST" style="display:inline;">
+                                    <input type="hidden" name="txId" value="${t._id}">
+                                    <input type="text" name="newDescription" value="${t.description}" style="width:130px;" required>
+                                    <button type="submit" class="btn" style="padding:3px 6px;">Edit</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `).join('');
 
-<script>
-    // REPLACE WITH YOUR ACTUAL BACKEND URL (e.g. Render, Railway)
-    const API_URL = "https://your-backend-server.onrender.com"; 
-    const socket = io(API_URL);
+                    let selectOptions = data.users.map(u => `<option value="${u.username}">${u.username}</option>`).join('');
 
-    window.addEventListener("load", function () {
-        setTimeout(() => {
-            document.getElementById("loader").style.display = "none";
-            document.getElementById("app").style.display = "block";
-        }, 1000);
-    });
+                    app.innerHTML = `
+                        <h1>Admin Control Panel</h1>
+                        <p>Manage client accounts, update balances, edit price tags/amounts, and modify transaction notifications.</p>
+                        
+                        <h2>Client Accounts</h2>
+                        <table>
+                            <tr><th>Username</th><th>Balance</th><th>Action / Edit Amount</th></tr>
+                            ${userRows}
+                        </table>
 
-    function showLoginTab() {
-        document.getElementById("registration").style.display = "none";
-        document.getElementById("loginSection").style.display = "block";
-    }
+                        <h2 style="margin-top:25px;">Send Custom Transaction / Notification</h2>
+                        <form action="/admin/send-transaction" method="POST">
+                            <div class="form-group">
+                                <label>Client Username:</label>
+                                <select name="username" required>${selectOptions}</select>
+                            </div>
+                            <div class="form-group">
+                                <label>Type:</label>
+                                <select name="type">
+                                    <option value="Credit">Credit (Add Money)</option>
+                                    <option value="Debit">Debit (Deduct Money)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount / Price Tag:</label>
+                                <input type="number" step="0.01" name="amount" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Notification Note:</label>
+                                <input type="text" name="description" placeholder="e.g. Deposit verified successfully" required>
+                            </div>
+                            <button type="submit" class="btn">Send Notification & Update Balance</button>
+                        </form>
 
-    function showRegisterTab() {
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("registration").style.display = "block";
-    }
-
-    // Server-Connected Registration
-    document.getElementById("registrationForm").addEventListener("submit", async function(event) {
-        event.preventDefault();
-        const clientData = {
-            firstName: document.getElementById("regFirstName").value.trim(),
-            lastName: document.getElementById("regLastName").value.trim(),
-            email: document.getElementById("regEmail").value.trim(),
-            phone: document.getElementById("regPhone").value.trim(),
-            password: document.getElementById("regPassword").value,
-            accountName: "Personal Account",
-            balance: "₩0.00"
-        };
-
-        try {
-            const response = await fetch(`${API_URL}/api/register`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(clientData)
-            });
-            const result = await response.json();
-            if (response.ok) {
-                document.getElementById("regSuccess").style.display = "block";
-                setTimeout(() => { showLoginTab(); }, 1500);
-            } else {
-                alert(result.error);
-            }
-        } catch (err) {
-            alert("Connection error to server.");
+                        <h2 style="margin-top:25px;">Recent Transactions / Notifications</h2>
+                        <table>
+                            <tr><th>User</th><th>Type</th><th>Amount</th><th>Description</th><th>Modify</th></tr>
+                            ${txRows}
+                        </table>
+                        <br><br>
+                        <a href="/" class="btn btn-danger">Log Out</a>
+                    `;
+                });
+        } else {
+            app.innerHTML = `
+                <h1>Banking Portal Login</h1>
+                <form action="/login" method="POST">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" name="username" required autocapitalize="none">
+                    </div>
+                    <div class="form-group">
+                        <label>PIN / Password:</label>
+                        <input type="password" name="pin" required>
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+                <hr style="margin:20px 0;">
+                <h2>Create Account</h2>
+                <form action="/register" method="POST">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" name="username" required autocapitalize="none">
+                    </div>
+                    <div class="form-group">
+                        <label>PIN:</label>
+                        <input type="password" name="pin" required>
+                    </div>
+                    <button type="submit" class="btn" style="background:#28a745;">Register</button>
+                </form>
+            `;
         }
-    });
-
-    // Server-Connected Login (Works from ANY phone worldwide)
-    document.getElementById("loginForm").addEventListener("submit", async function(event) {
-        event.preventDefault();
-        const credentials = {
-            email: document.getElementById("loginEmail").value.trim(),
-            phone: document.getElementById("loginPhone").value.trim(),
-            password: document.getElementById("loginPassword").value
-        };
-
-        try {
-            const response = await fetch(`${API_URL}/api/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(credentials)
-            });
-            const clientObj = await response.json();
-            if (response.ok) {
-                document.getElementById("loginError").style.display = "none";
-                localStorage.setItem("cbkActiveUser", JSON.stringify(clientObj));
-                loginUserSession(clientObj);
-            } else {
-                document.getElementById("loginError").style.display = "block";
-            }
-        } catch (err) {
-            alert("Server login error.");
-        }
-    });
-
-    function loginUserSession(clientObj) {
-        document.getElementById("displayGreetingName").textContent = (clientObj.firstName + " " + clientObj.lastName).toUpperCase();
-        document.getElementById("displayEmail").textContent = clientObj.email;
-        document.getElementById("displayPhone").textContent = clientObj.phone;
-        document.getElementById("displayBalance").textContent = clientObj.balance || "₩0.00";
-        
-        document.getElementById("registration").style.display = "none";
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-    }
-
-    function logout() {
-        localStorage.removeItem("cbkActiveUser");
-        document.getElementById("dashboard").style.display = "none";
-        document.getElementById("loginSection").style.display = "block";
-    }
-</script>
+    </script>
 </body>
 </html>
