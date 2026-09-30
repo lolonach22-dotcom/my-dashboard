@@ -1,89 +1,2360 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #121212;
-    color: #ffffff;
-    margin: 0;
-    padding: 20px;
-}
-.container {
-    max-width: 600px;
-    margin: 40px auto;
-    background: #1e1e1e;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
-h1, h2 {
-    color: #4da3ff;
-}
-.form-group {
-    margin-bottom: 15px;
-}
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-input, select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #444;
-    background: #2a2a2a;
-    color: #fff;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-.btn {
-    display: inline-block;
-    background: #007bff;
-    color: white;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    font-size: 14px;
-}
-.btn:hover {
-    background: #0056b3;
-}
-.btn-danger {
-    background: #dc3545;
-}
-.btn-danger:hover {
-    background: #c82333;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-th, td {
-    padding: 10px;
-    border: 1px solid #444;
-    text-align: left;
-}
-th {
-    background: #007bff;
-    color: white;
-}
-.support-float {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #28a745;
-    color: white;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-.error-msg {
-    color: #ff4d4d;
-    margin-bottom: 15px;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Korea City Bank - OPay Edition</title>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #121212;
+        color: #e0e0e0;
+        user-select: none;
+    }
+
+    button, input, select {
+        font: inherit;
+    }
+
+    /* =========================
+       LOADER
+    ========================== */
+    #loader {
+        position: fixed;
+        inset: 0;
+        background: #121212;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity .5s ease;
+    }
+
+    .loader-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        background: #ffd400;
+        color: #121212;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 40px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 30px rgba(255, 212, 0, 0.25);
+    }
+
+    #loader h1 {
+        margin: 0 0 5px;
+        color: #fff;
+        font-size: 22px;
+    }
+
+    #loader p {
+        color: #888;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .spinner {
+        width: 28px;
+        height: 28px;
+        border: 3px solid #333;
+        border-top-color: #ffd400;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-top: 20px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* =========================
+       APP CONTAINER
+    ========================== */
+    #app {
+        display: none;
+        min-height: 100vh;
+        background: #181818;
+        color: #f0f0f0;
+    }
+
+    .navbar {
+        height: 65px;
+        background: #1e1e1e;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 5%;
+        border-bottom: 1px solid #2a2a2a;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .brand {
+        font-weight: bold;
+        font-size: 18px;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .brand span {
+        color: #ffd400;
+    }
+
+    .nav-right-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Translator dropdown style */
+    .language-select {
+        background: #181818;
+        border: 1px solid #333;
+        color: #ffd400;
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        outline: none;
+        cursor: pointer;
+    }
+
+    /* Secret hidden trigger for admin */
+    .secret-trigger {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 3px;
+        cursor: pointer;
+        padding: 8px;
+    }
+    .secret-trigger span {
+        display: block;
+        width: 14px;
+        height: 2px;
+        background: #444;
+        border-radius: 2px;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px 16px 80px;
+    }
+
+    /* =========================
+       AUTH (LOGIN / REGISTER)
+    ========================== */
+    .auth-box {
+        background: #202020;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        border: 1px solid #2d2d2d;
+        margin-top: 20px;
+    }
+
+    .auth-box h2 {
+        margin-top: 0;
+        color: #fff;
+        font-size: 20px;
+    }
+
+    .notice {
+        background: rgba(255, 212, 0, 0.08);
+        border-left: 4px solid #ffd400;
+        padding: 12px 14px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        color: #ccc;
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #aaa;
+    }
+
+    input, select {
+        border: 1px solid #333;
+        padding: 12px;
+        border-radius: 10px;
+        outline: none;
+        background: #181818;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    input:focus, select:focus {
+        border-color: #ffd400;
+        box-shadow: 0 0 0 2px rgba(255, 212, 0, 0.15);
+    }
+
+    .primary-btn {
+        width: 100%;
+        border: 0;
+        background: #ffd400;
+        color: #121212;
+        font-weight: bold;
+        padding: 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: 20px;
+        font-size: 15px;
+        transition: background 0.2s;
+    }
+
+    .primary-btn:hover {
+        background: #e6be00;
+    }
+
+    .switch-auth {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 13px;
+        color: #888;
+    }
+
+    .switch-auth span {
+        color: #ffd400;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .error-msg {
+        display: none;
+        margin-top: 15px;
+        padding: 12px;
+        background: rgba(220, 53, 69, 0.2);
+        color: #ff8b94;
+        border-radius: 8px;
+        font-size: 13px;
+        border: 1px solid rgba(220, 53, 69, 0.4);
+    }
+
+    .success {
+        display: none;
+        margin-top: 15px;
+        padding: 12px;
+        background: rgba(36, 97, 36, 0.2);
+        color: #79ee79;
+        border-radius: 8px;
+        font-size: 13px;
+        border: 1px solid rgba(36, 97, 36, 0.4);
+    }
+
+    /* =========================
+       DASHBOARD HEADER & TOP BAR
+    ========================== */
+    #dashboard {
+        display: none;
+    }
+
+    .top-dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background: #202020;
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid #2d2d2d;
+    }
+
+    .user-profile-identity {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #333;
+        border: 2px solid #ffd400;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .avatar-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-placeholder {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ffd400;
+    }
+
+    .greeting-box h2 {
+        margin: 0;
+        font-size: 18px;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .greeting-box p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: #888;
+    }
+
+    .top-action-icons {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .icon-btn {
+        background: #282828;
+        border: 1px solid #333;
+        color: #ffd400;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        position: relative;
+        font-size: 16px;
+        transition: border-color 0.2s;
+    }
+
+    .icon-btn:hover {
+        border-color: #ffd400;
+    }
+
+    .badge-count {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #ff4d4d;
+        color: #fff;
+        font-size: 9px;
+        font-weight: bold;
+        padding: 2px 5px;
+        border-radius: 10px;
+        border: 1px solid #181818;
+    }
+
+    /* =========================
+       BALANCE CARD (Professional Yellow Style - No Add Money, No Earned Today)
+    ========================== */
+    .card {
+        background: #202020;
+        border: 1px solid #2d2d2d;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 16px;
+    }
+
+    .balance-card {
+        background: linear-gradient(135deg, #ffd400, #e6be00);
+        color: #121212;
+        border: none;
+        position: relative;
+        box-shadow: 0 8px 25px rgba(255, 212, 0, 0.2);
+    }
+
+    .balance-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .balance-title-area {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .balance-card h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        opacity: 0.85;
+    }
+
+    .eye-toggle-btn {
+        background: none;
+        border: none;
+        color: #121212;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        opacity: 0.85;
+    }
+
+    .amount {
+        font-size: 34px;
+        font-weight: 800;
+        margin: 16px 0 4px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Tiny transaction history link dashboard tile under balance card */
+    .tiny-tx-tile {
+        background: #222;
+        border: 1px solid #333;
+        padding: 12px 16px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+    .tiny-tx-tile:hover {
+        border-color: #ffd400;
+    }
+    .tiny-tx-tile span {
+        font-size: 12px;
+        color: #ffd400;
+        font-weight: 600;
+    }
+    .tiny-tx-tile p {
+        margin: 0;
+        font-size: 13px;
+        color: #ccc;
+        font-weight: 500;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .feature {
+        background: #272727;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+
+    .feature:hover {
+        border-color: #ffd400;
+    }
+
+    .feature h4 {
+        margin: 0 0 6px;
+        font-size: 14px;
+        color: #fff;
+    }
+
+    .feature p {
+        margin: 0;
+        font-size: 12px;
+        color: #999;
+    }
+
+    .progress {
+        height: 8px;
+        background: #333;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+
+    .progress-bar {
+        width: 65%;
+        height: 100%;
+        background: #ffd400;
+    }
+
+    .profile-info p {
+        margin: 8px 0;
+        font-size: 13px;
+        color: #ccc;
+    }
+
+    .profile-info strong {
+        color: #fff;
+    }
+
+    .logout {
+        margin-top: 15px;
+        background: transparent;
+        border: 1px solid #444;
+        color: #ccc;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        width: 100%;
+    }
+
+    .logout:hover {
+        background: #2d2d2d;
+        color: #fff;
+    }
+
+    /* =========================
+       ADMIN PANEL
+    ========================== */
+    #adminPanel {
+        display: none;
+        background: #202020;
+        border: 1px solid #ffd400;
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+
+    #adminPanel h2 {
+        color: #ffd400;
+        margin-top: 0;
+        font-size: 20px;
+    }
+
+    .client-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 12px;
+    }
+
+    .client-table th, .client-table td {
+        border: 1px solid #333;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .client-table th {
+        background: #2a2a2a;
+        color: #ffd400;
+    }
+
+    .client-table input {
+        padding: 6px;
+        font-size: 11px;
+        width: 100%;
+        background: #181818;
+        border: 1px solid #444;
+        color: #fff;
+        border-radius: 4px;
+    }
+
+    .admin-chat-container {
+        margin-top: 25px;
+        background: #181818;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 16px;
+    }
+
+    .admin-chat-list {
+        height: 180px;
+        overflow-y: auto;
+        background: #121212;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    /* =========================
+       MODAL POPUP OVERLAY
+    ========================== */
+    #modalOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(4px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        padding: 20px;
+    }
+
+    .modal-box {
+        background: #222;
+        border: 1px solid #333;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        animation: scaleUp 0.25s ease;
+    }
+
+    @keyframes scaleUp {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-box h3 {
+        margin-top: 0;
+        color: #ffd400;
+        font-size: 18px;
+    }
+
+    .modal-box p {
+        font-size: 13px;
+        color: #bbb;
+        line-height: 1.5;
+    }
+
+    .modal-close-btn {
+        width: 100%;
+        background: #ffd400;
+        color: #121212;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 15px;
+        cursor: pointer;
+    }
+
+    /* =========================
+       DRAGGABLE & RENAMEABLE "Customer Service" CHAT WIDGET
+    ========================== */
+    .chat-fab-container {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: grab;
+        z-index: 999;
+        touch-action: none;
+        user-select: none;
+    }
+
+    .chat-fab-container:active {
+        cursor: grabbing;
+    }
+
+    .chat-fab-label {
+        background: #222;
+        border: 1px solid #333;
+        color: #ffd400;
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Triangular drag handle indicator */
+    .drag-handle-triangle {
+        width: 0;
+        height: 0;
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        border-left: 6px solid #ffd400;
+        display: inline-block;
+    }
+
+    .chat-fab {
+        background: #ffd400;
+        color: #121212;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        box-shadow: 0 4px 20px rgba(255, 212, 0, 0.4);
+        border: none;
+        pointer-events: none;
+    }
+
+    #chatPopup {
+        position: fixed;
+        bottom: 95px;
+        right: 20px;
+        width: 340px;
+        max-width: calc(100% - 40px);
+        background: #202020;
+        border: 1px solid #333;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        display: none;
+        flex-direction: column;
+        z-index: 1000;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        background: #282828;
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #333;
+    }
+
+    .chat-header h4 {
+        margin: 0;
+        color: #ffd400;
+        font-size: 14px;
+    }
+
+    .chat-close {
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .chat-body {
+        height: 250px;
+        overflow-y: auto;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: #181818;
+    }
+
+    .chat-msg {
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        max-width: 80%;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    .chat-msg.client {
+        background: #2c2c2c;
+        align-self: flex-start;
+        color: #fff;
+    }
+
+    .chat-msg.admin {
+        background: #ffd400;
+        color: #121212;
+        align-self: flex-end;
+        font-weight: 500;
+    }
+
+    .chat-msg img {
+        max-width: 100%;
+        border-radius: 6px;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .chat-footer {
+        padding: 10px;
+        background: #202020;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border-top: 1px solid #333;
+    }
+
+    .chat-footer input {
+        flex: 1;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .chat-attach-btn {
+        background: #2a2a2a;
+        border: 1px solid #444;
+        color: #ffd400;
+        padding: 8px 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .chat-footer button.send-btn {
+        background: #ffd400;
+        color: #121212;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    /* =========================
+       TRANSACTION HISTORY OUTLAYER
+    ========================== */
+    #transactionOutlayer {
+        position: fixed;
+        inset: 0;
+        background: #181818;
+        z-index: 10500;
+        display: none;
+        flex-direction: column;
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+
+    .outlayer-header {
+        height: 60px;
+        background: #202020;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        border-bottom: 1px solid #333;
+    }
+
+    .outlayer-header h3 {
+        margin: 0;
+        color: #fff;
+        font-size: 16px;
+    }
+
+    .outlayer-close {
+        background: #333;
+        color: #fff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .outlayer-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .mini-balance-box {
+        background: #222;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .mini-balance-box span {
+        font-size: 12px;
+        color: #888;
+    }
+
+    .mini-balance-box h4 {
+        margin: 4px 0 0;
+        color: #ffd400;
+        font-size: 18px;
+    }
+
+    .tx-item {
+        background: #202020;
+        border: 1px solid #2d2d2d;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .tx-left h5 {
+        margin: 0 0 4px;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .tx-left p {
+        margin: 0;
+        font-size: 12px;
+        color: #888;
+    }
+
+    .tx-right {
+        text-align: right;
+    }
+
+    .tx-right .amt {
+        font-weight: bold;
+        font-size: 14px;
+        margin: 0 0 4px;
+    }
+
+    .tx-right .date {
+        font-size: 11px;
+        color: #777;
+        margin: 0;
+    }
+
+    /* =========================
+       NOTIFICATION INBOX POPUP
+    ========================== */
+    #notificationOutlayer {
+        position: fixed;
+        inset: 0;
+        background: #181818;
+        z-index: 10500;
+        display: none;
+        flex-direction: column;
+        animation: slideUp 0.3s ease;
+    }
+
+    .notification-item {
+        background: #202020;
+        border: 1px solid #2d2d2d;
+        border-left: 4px solid #ffd400;
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .notification-item h5 {
+        margin: 0 0 4px;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .notification-item p {
+        margin: 0 0 6px;
+        font-size: 12px;
+        color: #bbb;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .notification-item .time {
+        font-size: 10px;
+        color: #777;
+    }
+
+    @media(max-width: 500px) {
+        .form-grid, .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     LOADER
+========================== -->
+<div id="loader">
+    <div class="loader-logo">K</div>
+    <h1>Korea City Bank</h1>
+    <p>Loading secure environment...</p>
+    <div class="spinner"></div>
+</div>
+
+<!-- =========================
+     APP INTERFACE
+========================== -->
+<div id="app">
+
+    <nav class="navbar">
+        <div class="brand" data-i18n="brandName">
+            <span>CBK</span> • City Bank
+        </div>
+        <div class="nav-right-controls">
+            <!-- Language Translator Selector -->
+            <select class="language-select" id="languageSelector" onchange="changeLanguage(this.value)">
+                <option value="en">English</option>
+                <option value="ko">한국어 (Korean)</option>
+                <option value="zh">中文 (Chinese)</option>
+                <option value="ja">日本語 (Japanese)</option>
+                <option value="ru">Русский (Russian)</option>
+            </select>
+            <!-- Secret hidden trigger lines: Admin taps this and inputs 'operafootball' -->
+            <div class="secret-trigger" onclick="openAdminPortal()" title="System Portal">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <!-- ADMIN PANEL SECTION (Secured by 'operafootball') -->
+        <section id="adminPanel">
+            <h2>👑 Owner Control View</h2>
+            <p style="font-size: 13px; color: #aaa;">Full control overview of client directories, login credentials, balances, custom transactions, and customer service messages.</p>
+            
+            <h3 style="font-size: 15px; color: #fff; margin-top: 20px;">Registered Clients Detailed Directory & Editor</h3>
+            <div style="overflow-x: auto;">
+                <table class="client-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email / Phone</th>
+                            <th>Password</th>
+                            <th>Balance</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientTableBody">
+                        <!-- Populated dynamically with full editable details -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Admin Custom Transaction Writer -->
+            <div class="admin-chat-container">
+                <h3 style="font-size: 14px; color: #ffd400; margin-top: 0;">📝 Add Transaction History & Credit Alert</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <select id="adminTxClientSelect" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px; grid-column: 1/-1;">
+                        <!-- Client options -->
+                    </select>
+                    <input type="text" id="adminTxTitle" placeholder="Title (e.g. Credit Alert / Big Hit)" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
+                    <select id="adminTxType" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
+                        <option value="credit">Credit / Inflow (+)</option>
+                        <option value="debit">Debit / Withdrawal (-)</option>
+                    </select>
+                    <input type="text" id="adminTxAmount" placeholder="Amount (e.g. ₩10,000,000)" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
+                    <input type="text" id="adminTxDesc" placeholder="Description (e.g. Wire Transfer)" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
+                </div>
+                <button onclick="adminSubmitTransaction()" style="width: 100%; background: #ffd400; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; color: #121212; font-size: 12px;">Publish Transaction & Trigger Email/SMS Alert</button>
+            </div>
+
+            <!-- Admin Customer Service Support Inbox Section -->
+            <div class="admin-chat-container">
+                <h3 style="font-size: 14px; color: #ffd400; margin-top: 0;">💬 Customer Service Support Control Inbox</h3>
+                <div class="admin-chat-list" id="adminChatInbox">
+                    <!-- Real-time client inquiries appear here -->
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="adminReplyInput" placeholder="Reply to client as Customer Service...">
+                    <input type="file" id="adminReplyImageFile" accept="image/*" style="display: none;" onchange="sendAdminImage(event)">
+                    <button class="chat-attach-btn" onclick="document.getElementById('adminReplyImageFile').click()" title="Attach Image">📷</button>
+                    <button onclick="sendAdminReply()" style="background: #ffd400; border: none; padding: 0 14px; height: 38px; border-radius: 8px; font-weight: bold; cursor: pointer; color: #121212; font-size: 12px;">Send</button>
+                </div>
+            </div>
+
+            <button class="logout" style="margin-top: 20px;" onclick="closeAdminPortal()">Exit Admin Panel</button>
+        </section>
+
+
+        <!-- REGISTRATION SECTION -->
+        <section id="registration" class="auth-box">
+            <h2 data-i18n="createAccTitle">Create Your Demo Account</h2>
+            <div class="notice" data-i18n="secRequirement">
+                Security Requirement: Please provide a valid active email, current phone number, and a secure password. You can also upload your profile photo below.
+            </div>
+
+            <form id="registrationForm">
+                <div class="form-grid">
+                    <div class="form-group full" style="align-items: center; margin-bottom: 10px;">
+                        <label data-i18n="profilePicLabel">Profile Picture</label>
+                        <div class="avatar-circle" onclick="document.getElementById('regAvatarFile').click()" style="width: 70px; height: 70px;" title="Upload photo">
+                            <span id="regAvatarPreviewText" class="avatar-placeholder">+</span>
+                            <img id="regAvatarImg" src="" style="display: none;" alt="Avatar">
+                        </div>
+                        <input type="file" id="regAvatarFile" accept="image/*" style="display: none;" onchange="previewRegAvatar(event)">
+                        <span style="font-size: 11px; color: #888; margin-top: 6px;" data-i18n="tapCircleText">Tap circle to add picture</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regFirstName" data-i18n="firstNameLabel">First name</label>
+                        <input id="regFirstName" type="text" required placeholder="First name">
+                    </div>
+                    <div class="form-group">
+                        <label for="regLastName" data-i18n="lastNameLabel">Last name</label>
+                        <input id="regLastName" type="text" required placeholder="Last name">
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail" data-i18n="emailLabel">Active Email address</label>
+                        <input id="regEmail" type="email" required placeholder="name@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="regPhone" data-i18n="phoneLabel">Phone number</label>
+                        <input id="regPhone" type="tel" required placeholder="+82 800 000 0000">
+                    </div>
+                    <div class="form-group">
+                        <label for="nationality" data-i18n="nationalityLabel">Nationality</label>
+                        <select id="nationality" required>
+                            <option value="">Select nationality</option>
+                            <option>Chinese</option>
+                            <option>Korean</option>
+                            <option>United States</option>
+                            <option>British</option>
+                            <option>American</option>
+                            <option>Canadian</option>
+                            <option>Australian</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="profession" data-i18n="professionLabel">Profession</label>
+                        <input id="profession" type="text" required placeholder="e.g. Developer">
+                    </div>
+                    <div class="form-group full">
+                        <label for="accountName" data-i18n="accNameLabel">Preferred account name</label>
+                        <input id="accountName" type="text" required placeholder="e.g. Personal Account">
+                    </div>
+                    <div class="form-group full">
+                        <label for="regPassword" data-i18n="passLabel">Create Password</label>
+                        <input id="regPassword" type="password" required placeholder="Secure password">
+                    </div>
+                </div>
+
+                <button class="primary-btn" type="submit" data-i18n="createBtn">Create Account</button>
+                <div class="success" id="regSuccess">Account registered successfully! You can now log in.</div>
+                
+                <div class="switch-auth">
+                    <span data-i18n="alreadyHaveAcc">Already have an account?</span> <span onclick="showLoginTab()" data-i18n="loginHere">Log in here</span>
+                </div>
+            </form>
+        </section>
+
+
+        <!-- LOGIN SECTION -->
+        <section id="loginSection" class="auth-box" style="display: none;">
+            <h2 data-i18n="loginTitle">Account Login</h2>
+            <div class="notice" data-i18n="loginNotice">
+                Enter your registered active email, phone number, and password to access your account dashboard.
+            </div>
+
+            <form id="loginForm">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="loginEmail" data-i18n="emailLabel">Active Email address</label>
+                        <input id="loginEmail" type="email" required placeholder="name@example.com">
+                    </div>
+                    <div class="form-group full">
+                        <label for="loginPhone" data-i18n="phoneLabel">Phone number</label>
+                        <input id="loginPhone" type="tel" required placeholder="+82 800 000 0000">
+                    </div>
+                    <div class="form-group full">
+                        <label for="loginPassword" data-i18n="passLabel">Password</label>
+                        <input id="loginPassword" type="password" required placeholder="Your password">
+                    </div>
+                </div>
+
+                <button class="primary-btn" type="submit" data-i18n="loginBtn">Secure Login</button>
+                <div class="error-msg" id="loginError">Invalid credentials. Please verify your email, phone number, and password.</div>
+
+                <div class="switch-auth">
+                    <span data-i18n="noAcc">Don't have an account?</span> <span onclick="showRegisterTab()" data-i18n="createAcc">Create account</span>
+                </div>
+            </form>
+        </section>
+
+
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard">
+            <!-- TOP DASHBOARD HEADER -->
+            <div class="top-dashboard-header">
+                <div class="user-profile-identity">
+                    <div class="avatar-circle" onclick="document.getElementById('dashAvatarFile').click()" title="Change profile picture">
+                        <span id="dashAvatarInitial" class="avatar-placeholder">L</span>
+                        <img id="dashAvatarImg" src="" style="display: none;" alt="Avatar">
+                    </div>
+                    <input type="file" id="dashAvatarFile" accept="image/*" style="display: none;" onchange="updateDashAvatar(event)">
+                    <div class="greeting-box">
+                        <h2 id="displayGreetingName">HI, LOTANNA</h2>
+                        <p id="displayAccount">Personal Account</p>
+                    </div>
+                </div>
+                <div class="top-action-icons">
+                    <div class="icon-btn" onclick="toggleNotificationOutlayer()" title="Notifications / Email & SMS Feed">
+                        🔔
+                        <span id="notifBadge" class="badge-count" style="display: none;">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BALANCE CARD (Professional Yellow Style - Without Add Money & Without Earned Today) -->
+            <div class="card balance-card">
+                <div class="balance-header-row">
+                    <div class="balance-title-area">
+                        <h3 data-i18n="availableBal">Available</h3>
+                        <!-- Toggle eye icon with cancel slash mark -->
+                        <button class="eye-toggle-btn" onclick="toggleBalanceVisibility()" id="balanceEyeBtn" title="Toggle Balance">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                <div class="amount" id="displayBalance">₩122,324,000</div>
+            </div>
+
+            <!-- TINY TRANSACTION HISTORY TILE UNDER BALANCE -->
+            <div class="tiny-tx-tile" onclick="openTransactionOutlayer()">
+                <p data-i18n="txHistoryTitle">📋 Transaction History</p>
+                <span data-i18n="viewRecords">View Records →</span>
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="card" style="background: transparent; border: none; padding: 0; margin-bottom: 16px;">
+                <h3 style="font-size: 15px; margin-bottom: 12px; color: #fff;" data-i18n="quickActions">Quick Actions</h3>
+                <div class="dashboard-grid">
+                    <div class="feature" onclick="showModal('withdraw')">
+                        <h4 data-i18n="withdrawTitle">withdraw</h4>
+                        <p data-i18n="withdrawDesc">Withdraw account funds.</p>
+                    </div>
+                    <div class="feature" onclick="showModal('transfer')">
+                        <h4 data-i18n="transferTitle">↔ Transfer</h4>
+                        <p data-i18n="transferDesc">Send funds securely.</p>
+                    </div>
+                    <div class="feature" onclick="openTransactionOutlayer()">
+                        <h4 data-i18n="transactionsTitle">📋 Transactions</h4>
+                        <p data-i18n="transactionsDesc">View history & details.</p>
+                    </div>
+                    <div class="feature" onclick="showModal('investments')">
+                        <h4 data-i18n="investmentsTitle">📈 Investments</h4>
+                        <p data-i18n="investmentsDesc">View 26-week plans.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAVINGS CHALLENGE -->
+            <div class="card">
+                <h3 style="margin-top:0; font-size:15px; color:#fff;" data-i18n="savingsTitle">26-Week Savings Challenge</h3>
+                <p style="font-size: 13px; color: #999;" data-i18n="savingsDesc">Progress toward your savings target.</p>
+                <strong style="font-size: 13px; color: #ffd400;" data-i18n="savingsWeek">Week 17 of 26</strong>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <p style="font-size: 12px; color: #aaa; margin: 4px 0 0;" data-i18n="savingsReward">Character reward: Gold Saver</p>
+            </div>
+
+            <!-- PROFILE CARD -->
+            <div class="card profile-info">
+                <h3 style="margin-top:0; font-size:15px; color:#fff;" data-i18n="profileDetails">Profile Details</h3>
+                <p><strong><span data-i18n="nationalityLabel">Nationality</span>:</strong> <span id="displayNationality"></span></p>
+                <p><strong><span data-i18n="professionLabel">Profession</span>:</strong> <span id="displayProfession"></span></p>
+                <p><strong><span data-i18n="emailLabel">Email</span>:</strong> <span id="displayEmail"></span></p>
+                <p><strong><span data-i18n="phoneLabel">Phone</span>:</strong> <span id="displayPhone"></span></p>
+            </div>
+
+            <button class="logout" onclick="logout()" data-i18n="logoutBtn">Log Out</button>
+        </section>
+
+    </main>
+</div>
+
+<!-- =========================
+     OUTLAYER TRANSACTION HISTORY PAGE
+========================== -->
+<div id="transactionOutlayer">
+    <div class="outlayer-header">
+        <h3 data-i18n="txHistoryTitle">Transaction History</h3>
+        <button class="outlayer-close" onclick="closeTransactionOutlayer()" data-i18n="closeBtn">Close</button>
+    </div>
+    <div class="outlayer-body">
+        <div class="mini-balance-box">
+            <div>
+                <span data-i18n="currBalSummary">Current Balance Summary</span>
+                <h4 id="outlayerBalanceText">₩122,324,000</h4>
+            </div>
+            <div style="text-align: right;">
+                <span data-i18n="statusLabel">Status</span>
+                <p style="margin: 4px 0 0; color: #79ee79; font-size: 12px; font-weight: bold;" data-i18n="activeLedger">Active Ledger</p>
+            </div>
+        </div>
+
+        <h4 style="font-size: 14px; color: #aaa; margin-bottom: 12px;" data-i18n="activityRecords">Activity Records</h4>
+
+        <div id="clientTxContainer">
+            <div style="color: #777; font-size: 12px; text-align: center; padding: 30px;" data-i18n="noTxFound">No transaction records found.</div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================
+     SIMULATED EMAIL / SMS NOTIFICATION INBOX PAGE
+========================== -->
+<div id="notificationOutlayer">
+    <div class="outlayer-header">
+        <h3 data-i18n="notifInboxTitle">Email & SMS Alert Inbox</h3>
+        <button class="outlayer-close" onclick="toggleNotificationOutlayer()" data-i18n="closeBtn">Close</button>
+    </div>
+    <div class="outlayer-body">
+        <div style="margin-bottom: 15px; font-size: 13px; color: #888;" data-i18n="notifInboxDesc">
+            Simulated official bank notifications received on your registered email and phone number feed.
+        </div>
+        <div id="notificationListContainer">
+            <div style="color: #777; font-size: 12px; text-align: center; padding: 30px;" data-i18n="noNotifFound">No notifications yet.</div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================
+     DRAGGABLE & RENAMEABLE "Customer Service" WIDGET
+========================== -->
+<div class="chat-fab-container" id="draggableChatFab" onclick="toggleChatPopup()">
+    <div class="chat-fab-label">
+        <span class="drag-handle-triangle" title="Drag me"></span>
+        Customer Service
+    </div>
+    <button class="chat-fab" title="Customer Service Center">💬</button>
+</div>
+
+<div id="chatPopup">
+    <div class="chat-header">
+        <h4 data-i18n="csCenterTitle">Customer Service Support Center</h4>
+        <button class="chat-close" onclick="toggleChatPopup()">✕</button>
+    </div>
+    <div class="chat-body" id="clientChatBox">
+        <div class="chat-msg admin">Customer Service: Hello! How can we assist you with your Korea City Bank account today?</div>
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="clientChatInput" placeholder="Type message..." data-i18n-placeholder="typeMsgPlaceholder">
+        <input type="file" id="clientChatImageFile" accept="image/*" style="display: none;" onchange="sendClientImage(event)">
+        <button class="chat-attach-btn" onclick="document.getElementById('clientChatImageFile').click()" title="Attach Image">📷</button>
+        <button class="send-btn" onclick="sendClientMessage()" data-i18n="sendBtn">Send</button>
+    </div>
+</div>
+
+<!-- =========================
+     POPUP MODAL OVERLAY
+========================== -->
+<div id="modalOverlay">
+    <div class="modal-box">
+        <h3 id="modalTitle">Notice</h3>
+        <p id="modalText">Processing request...</p>
+        <button class="modal-close-btn" onclick="closeModal()" data-i18n="gotItBtn">Got it</button>
+    </div>
+</div>
+
+<script>
+    /* =========================
+       TRANSLATOR DICTIONARY
+    ========================== */
+    const translations = {
+        en: {
+            brandName: "CBK • City Bank",
+            createAccTitle: "Create Your Demo Account",
+            secRequirement: "Security Requirement: Please provide a valid active email, current phone number, and a secure password. You can also upload your profile photo below.",
+            profilePicLabel: "Profile Picture",
+            tapCircleText: "Tap circle to add picture",
+            firstNameLabel: "First name",
+            lastNameLabel: "Last name",
+            emailLabel: "Active Email address",
+            phoneLabel: "Phone number",
+            nationalityLabel: "Nationality",
+            professionLabel: "Profession",
+            accNameLabel: "Preferred account name",
+            passLabel: "Create Password",
+            createBtn: "Create Account",
+            alreadyHaveAcc: "Already have an account?",
+            loginHere: "Log in here",
+            loginTitle: "Account Login",
+            loginNotice: "Enter your registered active email, phone number, and password to access your account dashboard.",
+            loginBtn: "Secure Login",
+            noAcc: "Don't have an account?",
+            createAcc: "Create account",
+            availableBal: "Available",
+            txHistoryTitle: "Transaction History",
+            viewRecords: "View Records →",
+            quickActions: "Quick Actions",
+            withdrawTitle: "withdraw",
+            withdrawDesc: "Withdraw account funds.",
+            transferTitle: "↔ Transfer",
+            transferDesc: "Send funds securely.",
+            transactionsTitle: "📋 Transactions",
+            transactionsDesc: "View history & details.",
+            investmentsTitle: "📈 Investments",
+            investmentsDesc: "View 26-week plans.",
+            savingsTitle: "26-Week Savings Challenge",
+            savingsDesc: "Progress toward your savings target.",
+            savingsWeek: "Week 17 of 26",
+            savingsReward: "Character reward: Gold Saver",
+            profileDetails: "Profile Details",
+            logoutBtn: "Log Out",
+            closeBtn: "Close",
+            currBalSummary: "Current Balance Summary",
+            statusLabel: "Status",
+            activeLedger: "Active Ledger",
+            activityRecords: "Activity Records",
+            noTxFound: "No transaction records found.",
+            notifInboxTitle: "Email & SMS Alert Inbox",
+            notifInboxDesc: "Simulated official bank notifications received on your registered email and phone number feed.",
+            noNotifFound: "No notifications yet.",
+            csCenterTitle: "Customer Service Support Center",
+            typeMsgPlaceholder: "Type message...",
+            sendBtn: "Send",
+            gotItBtn: "Got it"
+        },
+        ko: {
+            brandName: "CBK • 시티 은행",
+            createAccTitle: "데모 계정 생성",
+            secRequirement: "보안 요구 사항: 유효한 활성 이메일, 현재 전화번호, 보안 비밀번호를 입력하세요. 프로필 사진도 업로드할 수 있습니다.",
+            profilePicLabel: "프로필 사진",
+            tapCircleText: "원을 눌러 사진 추가",
+            firstNameLabel: "이름",
+            lastNameLabel: "성",
+            emailLabel: "이메일 주소",
+            phoneLabel: "전화번호",
+            nationalityLabel: "국적",
+            professionLabel: "직업",
+            accNameLabel: "선호하는 계정 이름",
+            passLabel: "비밀번호 생성",
+            createBtn: "계정 만들기",
+            alreadyHaveAcc: "이미 계정이 있으신가요?",
+            loginHere: "여기서 로그인",
+            loginTitle: "계정 로그인",
+            loginNotice: "등록된 활성 이메일, 전화번호, 비밀번호를 입력하여 대시보드에 접속하세요.",
+            loginBtn: "안전한 로그인",
+            noAcc: "계정이 없으신가요?",
+            createAcc: "계정 만들기",
+            availableBal: "사용 가능 잔액",
+            txHistoryTitle: "거래 내역",
+            viewRecords: "기록 보기 →",
+            quickActions: "빠른 작업",
+            withdrawTitle: "출금",
+            withdrawDesc: "계정 자금 출금.",
+            transferTitle: "↔ 이체",
+            transferDesc: "안전하게 송금.",
+            transactionsTitle: "📋 거래",
+            transactionsDesc: "내역 및 세부 정보 보기.",
+            investmentsTitle: "📈 투자",
+            investmentsDesc: "26주 플랜 보기.",
+            savingsTitle: "26주 저축 챌린지",
+            savingsDesc: "저축 목표를 향한 진행 상황.",
+            savingsWeek: "26주 중 17주차",
+            savingsReward: "캐릭터 보상: 골드 세이버",
+            profileDetails: "프로필 세부정보",
+            logoutBtn: "로그아웃",
+            closeBtn: "닫기",
+            currBalSummary: "현재 잔액 요약",
+            statusLabel: "상태",
+            activeLedger: "활성 장부",
+            activityRecords: "활동 기록",
+            noTxFound: "거래 내역이 없습니다.",
+            notifInboxTitle: "이메일 및 SMS 알림 수신함",
+            notifInboxDesc: "등록된 이메일 및 전화번호 피드로 수신된 시뮬레이션 공식 은행 알림입니다.",
+            noNotifFound: "알림이 없습니다.",
+            csCenterTitle: "고객센터 지원 센터",
+            typeMsgPlaceholder: "메시지를 입력하세요...",
+            sendBtn: "보내기",
+            gotItBtn: "확인"
+        },
+        zh: {
+            brandName: "CBK • 花旗银行",
+            createAccTitle: "创建您的演示账户",
+            secRequirement: "安全要求：请提供有效的活动电子邮件、当前电话号码和安全密码。您还可以在下方上传个人资料照片。",
+            profilePicLabel: "个人头像",
+            tapCircleText: "点击圆圈添加图片",
+            firstNameLabel: "名",
+            lastNameLabel: "姓",
+            emailLabel: "邮箱地址",
+            phoneLabel: "电话号码",
+            nationalityLabel: "国籍",
+            professionLabel: "职业",
+            accNameLabel: "首选账户名称",
+            passLabel: "创建密码",
+            createBtn: "创建账户",
+            alreadyHaveAcc: "已有账户？",
+            loginHere: "在此登录",
+            loginTitle: "账户登录",
+            loginNotice: "输入您注册的活动邮箱、电话号码和密码以访问您的账户仪表板。",
+            loginBtn: "安全登录",
+            noAcc: "没有账户？",
+            createAcc: "创建账户",
+            availableBal: "可用余额",
+            txHistoryTitle: "交易历史",
+            viewRecords: "查看记录 →",
+            quickActions: "快捷操作",
+            withdrawTitle: "提现",
+            withdrawDesc: "提取账户资金。",
+            transferTitle: "↔ 转账",
+            transferDesc: "安全发送资金。",
+            transactionsTitle: "📋 交易",
+            transactionsDesc: "查看历史记录和详情。",
+            investmentsTitle: "📈 投资",
+            investmentsDesc: "查看26周计划。",
+            savingsTitle: "26周储蓄挑战",
+            savingsDesc: "朝着储蓄目标迈进。",
+            savingsWeek: "第 17 周，共 26 周",
+            savingsReward: "角色奖励：黄金储蓄者",
+            profileDetails: "个人资料详情",
+            logoutBtn: "登出",
+            closeBtn: "关闭",
+            currBalSummary: "当前余额摘要",
+            statusLabel: "状态",
+            activeLedger: "活动账本",
+            activityRecords: "活动记录",
+            noTxFound: "未找到交易记录。",
+            notifInboxTitle: "电子邮件和短信提醒收件箱",
+            notifInboxDesc: "在您注册的电子邮件和电话号码feed上收到的模拟官方银行通知。",
+            noNotifFound: "暂无通知。",
+            csCenterTitle: "客户服务支持中心",
+            typeMsgPlaceholder: "输入消息...",
+            sendBtn: "发送",
+            gotItBtn: "知道了"
+        },
+        ja: {
+            brandName: "CBK • シティバンク",
+            createAccTitle: "デモアカウントの作成",
+            secRequirement: "セキュリティ要件：有効な有効メール、現在の電話番号、および安全なパスワードを入力してください。プロフィール写真もアップロードできます。",
+            profilePicLabel: "プロフィール写真",
+            tapCircleText: "丸をタップして画像を追加",
+            firstNameLabel: "名",
+            lastNameLabel: "姓",
+            emailLabel: "メールアドレス",
+            phoneLabel: "電話番号",
+            nationalityLabel: "国籍",
+            professionLabel: "職業",
+            accNameLabel: "希望アカウント名",
+            passLabel: "パスワードの作成",
+            createBtn: "アカウント作成",
+            alreadyHaveAcc: "すでにアカウントをお持ちですか？",
+            loginHere: "ログインはこちら",
+            loginTitle: "アカウントログイン",
+            loginNotice: "登録済みの有効なメールアドレス、電話番号、パスワードを入力してダッシュボードにアクセスしてください。",
+            loginBtn: "安全なログイン",
+            noAcc: "アカウントをお持ちではありませんか？",
+            createAcc: "アカウント作成",
+            availableBal: "利用可能残高",
+            txHistoryTitle: "取引履歴",
+            viewRecords: "記録を見る →",
+            quickActions: "クイックアクション",
+            withdrawTitle: "出金",
+            withdrawDesc: "アカウント資金を出金します。",
+            transferTitle: "↔ 振込",
+            transferDesc: "安全に送金します。",
+            transactionsTitle: "📋 取引",
+            transactionsDesc: "履歴と詳細を表示します。",
+            investmentsTitle: "📈 投資",
+            investmentsDesc: "26週間プランを表示します。",
+            savingsTitle: "26週間貯金チャレンジ",
+            savingsDesc: "貯金目標に向けた進捗。",
+            savingsWeek: "26週中第17週",
+            savingsReward: "キャラクター報酬：ゴールドセーバー",
+            profileDetails: "プロフィール詳細",
+            logoutBtn: "ログアウト",
+            closeBtn: "閉じる",
+            currBalSummary: "現在の残高サマリー",
+            statusLabel: "ステータス",
+            activeLedger: "アクティブ台帳",
+            activityRecords: "アクティビティ記録",
+            noTxFound: "取引記録が見つかりません。",
+            notifInboxTitle: "メール・SMS通知受信トレイ",
+            notifInboxDesc: "登録されたメールおよび電話番号フィードに受信されたシミュレートされた公式銀行通知。",
+            noNotifFound: "通知はありません。",
+            csCenterTitle: "カスタマーサービスサポートセンター",
+            typeMsgPlaceholder: "メッセージを入力...",
+            sendBtn: "送信",
+            gotItBtn: "了解"
+        },
+        ru: {
+            brandName: "CBK • City Bank",
+            createAccTitle: "Создать демо-аккаунт",
+            secRequirement: "Требование безопасности: укажите действующий активный адрес электронной почты, номер телефона и надежный пароль. Вы также можете загрузить фото профиля.",
+            profilePicLabel: "Фото профиля",
+            tapCircleText: "Нажмите на круг, чтобы добавить фото",
+            firstNameLabel: "Имя",
+            lastNameLabel: "Фамилия",
+            emailLabel: "Электронная почта",
+            phoneLabel: "Номер телефона",
+            nationalityLabel: "Национальность",
+            professionLabel: "Профессия",
+            accNameLabel: "Предпочтительное имя аккаунта",
+            passLabel: "Создать пароль",
+            createBtn: "Создать аккаунт",
+            alreadyHaveAcc: "Уже есть аккаунт?",
+            loginHere: "Войти здесь",
+            loginTitle: "Вход в аккаунт",
+            loginNotice: "Введите зарегистрированный адрес эл. почты, номер телефона и пароль для доступа к панели управления.",
+            loginBtn: "Безопасный вход",
+            noAcc: "Нет аккаунта?",
+            createAcc: "Создать аккаунт",
+            availableBal: "Доступно",
+            txHistoryTitle: "История транзакций",
+            viewRecords: "Просмотр записей →",
+            quickActions: "Быстрые действия",
+            withdrawTitle: "снять",
+            withdrawDesc: "Снятие средств со счета.",
+            transferTitle: "↔ Перевод",
+            transferDesc: "Безопасная отправка средств.",
+            transactionsTitle: "📋 Транзакции",
+            transactionsDesc: "Просмотр истории и деталей.",
+            investmentsTitle: "📈 Инвестиции",
+            investmentsDesc: "Просмотр 26-недельных планов.",
+            savingsTitle: "26-недельный челлендж сбережений",
+            savingsDesc: "Прогресс к вашей цели сбережений.",
+            savingsWeek: "Неделя 17 из 26",
+            savingsReward: "Награда: Золотой сберегатель",
+            profileDetails: "Детали профиля",
+            logoutBtn: "Выйти",
+            closeBtn: "Закрыть",
+            currBalSummary: "Сводка текущего баланса",
+            statusLabel: "Статус",
+            activeLedger: "Активный реестр",
+            activityRecords: "Записи активности",
+            noTxFound: "Записи транзакций не найдены.",
+            notifInboxTitle: "Входящие уведомлений (Email & SMS)",
+            notifInboxDesc: "Симулированные официальные банковские уведомления, полученные на ваш адрес эл. почты и телефон.",
+            noNotifFound: "Уведомлений пока нет.",
+            csCenterTitle: "Центр поддержки клиентов",
+            typeMsgPlaceholder: "Введите сообщение...",
+            sendBtn: "Отправить",
+            gotItBtn: "Понятно"
+        }
+    };
+
+    let currentLang = "en";
+
+    function changeLanguage(lang) {
+        currentLang = lang;
+        const dict = translations[lang] || translations.en;
+
+        document.querySelectorAll("[data-i18n]").forEach(el => {
+            const key = el.getAttribute("data-i18n");
+            if (dict[key]) {
+                el.textContent = dict[key];
+            }
+        });
+
+        document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+            const key = el.getAttribute("data-i18n-placeholder");
+            if (dict[key]) {
+                el.placeholder = dict[key];
+            }
+        });
+    }
+
+    /* LOADER */
+    window.addEventListener("load", function () {
+        setTimeout(function () {
+            const loader = document.getElementById("loader");
+            const app = document.getElementById("app");
+            loader.style.opacity = "0";
+            setTimeout(function () {
+                loader.style.display = "none";
+                app.style.display = "block";
+            }, 500);
+        }, 1500);
+    });
+
+    /* =========================
+       DRAGGABLE WIDGET LOGIC (Mouse & Touch)
+    ========================== */
+    const draggableFab = document.getElementById("draggableChatFab");
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+    let hasMoved = false;
+
+    draggableFab.addEventListener("pointerdown", function(e) {
+        isDragging = true;
+        hasMoved = false;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = draggableFab.getBoundingClientRect();
+        initialX = rect.left;
+        initialY = rect.top;
+        draggableFab.setPointerCapture(e.pointerId);
+    });
+
+    draggableFab.addEventListener("pointermove", function(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+            hasMoved = true;
+        }
+
+        let newX = initialX + dx;
+        let newY = initialY + dy;
+
+        const maxX = window.innerWidth - draggableFab.offsetWidth;
+        const maxY = window.innerHeight - draggableFab.offsetHeight;
+        newX = Math.max(10, Math.min(newX, maxX - 10));
+        newY = Math.max(10, Math.min(newY, maxY - 10));
+
+        draggableFab.style.left = newX + "px";
+        draggableFab.style.top = newY + "px";
+        draggableFab.style.bottom = "auto";
+        draggableFab.style.right = "auto";
+    });
+
+    draggableFab.addEventListener("pointerup", function(e) {
+        isDragging = false;
+        draggableFab.releasePointerCapture(e.pointerId);
+    });
+
+    draggableFab.addEventListener("click", function(e) {
+        if (hasMoved) {
+            e.stopImmediatePropagation();
+            hasMoved = false;
+        }
+    });
+
+    /* TAB SWITCHING UTILS */
+    function showLoginTab() {
+        document.getElementById("registration").style.display = "none";
+        document.getElementById("loginSection").style.display = "block";
+    }
+
+    function showRegisterTab() {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("registration").style.display = "block";
+    }
+
+    /* REGISTRATION AVATAR PREVIEW */
+    let tempRegAvatarData = "";
+    function previewRegAvatar(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempRegAvatarData = e.target.result;
+                document.getElementById("regAvatarImg").src = tempRegAvatarData;
+                document.getElementById("regAvatarImg").style.display = "block";
+                document.getElementById("regAvatarPreviewText").style.display = "none";
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    /* REGISTRATION LOGIC */
+    document.getElementById("registrationForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const firstName = document.getElementById("regFirstName").value.trim();
+        const lastName = document.getElementById("regLastName").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const phone = document.getElementById("regPhone").value.trim();
+        const nationality = document.getElementById("nationality").value;
+        const profession = document.getElementById("profession").value.trim();
+        const accountName = document.getElementById("accountName").value.trim();
+        const password = document.getElementById("regPassword").value;
+        const balance = "₩122,324,000";
+        const avatar = tempRegAvatarData || "";
+
+        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+        
+        const newClient = { 
+            firstName, lastName, email, phone, nationality, profession, accountName, password, balance, avatar, 
+            chatHistory: [], transactions: [], notifications: [] 
+        };
+        clients.push(newClient);
+        localStorage.setItem("cbkClients", JSON.stringify(clients));
+
+        document.getElementById("regSuccess").style.display = "block";
+        setTimeout(() => {
+            document.getElementById("regSuccess").style.display = "none";
+            showLoginTab();
+        }, 1500);
+    });
+
+    /* LOGIN VERIFICATION LOGIC */
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const email = document.getElementById("loginEmail").value.trim();
+        const phone = document.getElementById("loginPhone").value.trim();
+        const password = document.getElementById("loginPassword").value;
+
+        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+        const matchedClient = clients.find(c => c.email === email && c.phone === phone && c.password === password);
+
+        if (matchedClient) {
+            document.getElementById("loginError").style.display = "none";
+            loginUserSession(matchedClient);
+        } else {
+            document.getElementById("loginError").style.display = "block";
+        }
+    });
+
+    function loginUserSession(clientObj) {
+        const fullName = (clientObj.firstName + " " + clientObj.lastName).toUpperCase();
+        document.getElementById("displayGreetingName").textContent = "HI, " + fullName;
+        document.getElementById("displayAccount").textContent = clientObj.accountName;
+        document.getElementById("displayNationality").textContent = clientObj.nationality;
+        document.getElementById("displayProfession").textContent = clientObj.profession;
+        document.getElementById("displayEmail").textContent = clientObj.email;
+        document.getElementById("displayPhone").textContent = clientObj.phone;
+        
+        const currentBal = clientObj.balance || "₩122,324,000";
+        document.getElementById("displayBalance").setAttribute("data-real-balance", currentBal);
+        document.getElementById("displayBalance").textContent = currentBal;
+        document.getElementById("outlayerBalanceText").textContent = currentBal;
+
+        if (clientObj.avatar) {
+            document.getElementById("dashAvatarImg").src = clientObj.avatar;
+            document.getElementById("dashAvatarImg").style.display = "block";
+            document.getElementById("dashAvatarInitial").style.display = "none";
+        } else {
+            document.getElementById("dashAvatarImg").style.display = "none";
+            document.getElementById("dashAvatarInitial").style.display = "block";
+            document.getElementById("dashAvatarInitial").textContent = clientObj.firstName.charAt(0).toUpperCase();
+        }
+
+        loadClientChat(clientObj);
+        loadClientTransactions(clientObj);
+        loadClientNotifications(clientObj);
+
+        localStorage.setItem("cbkActiveUser", JSON.stringify(clientObj));
+
+        document.getElementById("registration").style.display = "none";
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* DASHBOARD AVATAR UPDATE */
+    function updateDashAvatar(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newAvatar = e.target.result;
+                document.getElementById("dashAvatarImg").src = newAvatar;
+                document.getElementById("dashAvatarImg").style.display = "block";
+                document.getElementById("dashAvatarInitial").style.display = "none";
+
+                let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
+                if (activeUser) {
+                    activeUser.avatar = newAvatar;
+                    localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
+
+                    let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+                    let idx = clients.findIndex(c => c.email === activeUser.email);
+                    if (idx !== -1) {
+                        clients[idx].avatar = newAvatar;
+                        localStorage.setItem("cbkClients", JSON.stringify(clients));
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    /* TOGGLE BALANCE VISIBILITY (EYE ICON MASK) */
+    let isBalanceHidden = false;
+    function toggleBalanceVisibility() {
+        const balanceEl = document.getElementById("displayBalance");
+        const eyeBtn = document.getElementById("balanceEyeBtn");
+
+        if (!isBalanceHidden) {
+            balanceEl.setAttribute("data-real-balance", balanceEl.textContent);
+            balanceEl.textContent = "••••••••";
+            eyeBtn.innerHTML = "👁️‍🗨️";
+            isBalanceHidden = true;
+        } else {
+            balanceEl.textContent = balanceEl.getAttribute("data-real-balance") || "₩122,324,000";
+            eyeBtn.innerHTML = "👁️";
+            isBalanceHidden = false;
+        }
+    }
+
+    /* POPUP MODAL LOGIC */
+    function showModal(type) {
+        const overlay = document.getElementById("modalOverlay");
+        const title = document.getElementById("modalTitle");
+        const text = document.getElementById("modalText");
+
+        overlay.style.display = "flex";
+
+        if (type === "withdraw") {
+            title.textContent = "Withdrawal Clearance Required";
+            text.innerHTML = "This is a demonstration withdrawal process.<br><br>Before your payment can be processed, a clearance fee is required. Please use the Customer Service support center to speak with an agent.";
+        } else if (type === "transfer") {
+            title.textContent = "Transfer Clearance Required";
+            text.innerHTML = "This is a demonstration of the transfer process.<br><br>Before funds can be transferred, a clearance fee is required. Please use the Customer Service support center to speak with an agent.";
+        } else {
+            title.textContent = "Investments";
+            text.innerHTML = "Explore modern portfolio tracking and automated investment allocations.";
+        }
+    }
+
+    function closeModal() {
+        document.getElementById("modalOverlay").style.display = "none";
+    }
+
+    /* OUTLAYER TRANSACTION HISTORY */
+    function openTransactionOutlayer() {
+        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
+        if (activeUser) {
+            let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+            let fresh = clients.find(c => c.email === activeUser.email);
+            if (fresh) {
+                activeUser = fresh;
+                localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
+                loadClientTransactions(activeUser);
+                const currentBal = activeUser.balance || "₩122,324,000";
+                document.getElementById("outlayerBalanceText").textContent = currentBal;
+            }
+        }
+        document.getElementById("transactionOutlayer").style.display = "flex";
+    }
+
+    function closeTransactionOutlayer() {
+        document.getElementById("transactionOutlayer").style.display = "none";
+    }
+
+    function loadClientTransactions(user) {
+        const container = document.getElementById("clientTxContainer");
+        container.innerHTML = "";
+
+        if (!user.transactions || user.transactions.length === 0) {
+            container.innerHTML = `<div style="color: #777; font-size: 12px; text-align: center; padding: 30px;" data-i18n="noTxFound">No transaction records found.</div>`;
+            return;
+        }
+
+        user.transactions.forEach(tx => {
+            const isCredit = tx.type === "credit";
+            const item = document.createElement("div");
+            item.className = "tx-item";
+            item.innerHTML = `
+                <div class="tx-left">
+                    <h5>${tx.title}</h5>
+                    <p>${tx.desc}</p>
+                </div>
+                <div class="tx-right">
+                    <p class="amt" style="color: ${isCredit ? '#10b981' : '#f87171'};">${isCredit ? '+' : '-'}${tx.amount}</p>
+                    <p class="date">${tx.date}</p>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    /* NOTIFICATION INBOX & AUTO-CLEARING BADGE */
+    function toggleNotificationOutlayer() {
+        const outlayer = document.getElementById("notificationOutlayer");
+        if (outlayer.style.display === "flex") {
+            outlayer.style.display = "none";
+        } else {
+            let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
+            if (activeUser) {
+                let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+                let fresh = clients.find(c => c.email === activeUser.email);
+                if (fresh) {
+                    activeUser = fresh;
+                    // Auto clear unread notification count upon viewing inbox
+                    activeUser.notifications.forEach(n => n.read = true);
+                    localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
+
+                    let idx = clients.findIndex(c => c.email === activeUser.email);
+                    if (idx !== -1) {
+                        clients[idx] = activeUser;
+                        localStorage.setItem("cbkClients", JSON.stringify(clients));
+                    }
+
+                    loadClientNotifications(activeUser);
+                }
+            }
+            outlayer.style.display = "flex";
+        }
+    }
+
+    function loadClientNotifications(user) {
+        const container = document.getElementById("notificationListContainer");
+        const badge = document.getElementById("notifBadge");
+        container.innerHTML = "";
+
+        if (!user.notifications || user.notifications.length === 0) {
+            container.innerHTML = `<div style="color: #777; font-size: 12px; text-align: center; padding: 30px;" data-i18n="noNotifFound">No notifications yet.</div>`;
+            badge.style.display = "none";
+            return;
+        }
+
+        // Count unread notifications
+        const unreadCount = user.notifications.filter(n => !n.read).length;
+        if (unreadCount > 0) {
+            badge.style.display = "inline-block";
+            badge.textContent = unreadCount;
+        } else {
+            badge.style.display = "none";
+        }
+
+        user.notifications.forEach(notif => {
+            const item = document.createElement("div");
+            item.className = "notification-item";
+            item.innerHTML = `
+                <h5>${notif.title}</h5>
+                <p>${notif.message}</p>
+                <div class="time">${notif.date}</div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    /* CHAT POPUP & IMAGE SHARING */
+    function toggleChatPopup() {
+        const popup = document.getElementById("chatPopup");
+        if (popup.style.display === "flex") {
+            popup.style.display = "none";
+        } else {
+            let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
+            if (activeUser) {
+                let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+                let fresh = clients.find(c => c.email === activeUser.email);
+                if (fresh) {
+                    activeUser = fresh;
+                    localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
+                    loadClientChat(activeUser);
+                }
+            }
+            popup.style.display = "flex";
+        }
+    }
+
+    function loadClientChat(user) {
+        const box = document.getElementById("clientChatBox");
+        box.innerHTML = `<div class="chat-msg admin">Customer Service: Hello! How can we assist you with your Korea City Bank account today?</div>`;
+        
+        if (user.chatHistory && user.chatHistory.length > 0) {
+            user.chatHistory.forEach(msg => {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = "chat-msg " + msg.sender;
+                
+                let contentHTML = `<strong>${msg.sender === "client" ? "Client" : "Customer Service"}:</strong> `;
+                if (msg.text) {
+                    contentHTML += `<span>${msg.text}</span>`;
+                }
+                if (msg.image) {
+                    contentHTML += `<img src="${msg.image}" alt="Attached image">`;
+                }
+                msgDiv.innerHTML = contentHTML;
+                box.appendChild(msgDiv);
+            });
+        }
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function sendClientMessage() {
+        const input = document.getElementById("clientChatInput");
+        if (!input.value.trim()) return;
+
+        const text = input.value;
+        input.value = "";
+
+        saveAndAppendClientMessage(text, null);
+    }
+
+    function sendClientImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                saveAndAppendClientMessage("", e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function saveAndAppendClientMessage(text, imgData) {
+        const box = document.getElementById("clientChatBox");
+        const msgDiv = document.createElement("div");
+        msgDiv.className = "chat-msg client";
+        let html = `<strong>Client:</strong> `;
+        if (text) html += `<span>${text}</span>`;
+        if (imgData) html += `<img src="${imgData}" alt="Attached image">`;
+        msgDiv.innerHTML = html;
+        box.appendChild(msgDiv);
+        box.scrollTop = box.scrollHeight;
+
+        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
+        if (activeUser) {
+            if (!activeUser.chatHistory) activeUser.chatHistory = [];
+            activeUser.chatHistory.push({ sender: "client", text: text, image: imgData });
+            localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
+
+            let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+            let idx = clients.findIndex(c => c.email === activeUser.email);
+            if (idx !== -1) {
+                clients[idx] = activeUser;
+                localStorage.setItem("cbkClients", JSON.stringify(clients));
+            }
+        }
+    }
+
+    /* ADMIN PORTAL ACCESS WITH 'operafootball' */
+    function openAdminPortal() {
+        const pass = prompt("Enter passcode:");
+        if (pass === "operafootball") {
+            document.getElementById("registration").style.display = "none";
+            document.getElementById("loginSection").style.display = "none";
+            document.getElementById("dashboard").style.display = "none";
+            document.getElementById("adminPanel").style.display = "block";
+
+            renderAdminData();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } else if (pass !== null) {
+            alert("Incorrect passcode.");
+        }
+    }
+
+    function renderAdminData() {
+        const tableBody = document.getElementById("clientTableBody");
+        tableBody.innerHTML = "";
+        const clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+        
+        const txSelect = document.getElementById("adminTxClientSelect");
+        txSelect.innerHTML = "";
+
+        if (clients.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">No registered clients yet.</td></tr>`;
+            txSelect.innerHTML = `<option value="">No clients available</option>`;
+        } else {
+            clients.forEach((c, index) => {
+                const opt = document.createElement("option");
+                opt.value = c.email;
+                opt.textContent = `${c.firstName} ${c.lastName} (${c.email})`;
+                txSelect.appendChild(opt);
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><input type="text" id="adm_name_${index}" value="${c.firstName} ${c.lastName}"></td>
+                    <td>
+                        <input type="text" id="adm_email_${index}" value="${c.email}" style="margin-bottom:4px;">
+                        <input type="text" id="adm_phone_${index}" value="${c.phone}">
+                    </td>
+                    <td><input type="text" id="adm_pass_${index}" value="${c.password}"></td>
+                    <td><input type="text" id="adm_bal_${index}" value="${c.balance || '₩122,324,000'}" style="color: #ffd400; font-weight: bold;"></td>
+                    <td><button onclick="saveClientEdits(${index})" style="background: #ffd400; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; color: #121212; font-size: 11px;">Save</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        const inbox = document.getElementById("adminChatInbox");
+        inbox.innerHTML = "";
+        let totalMessagesFound = false;
+
+        clients.forEach(c => {
+            if (c.chatHistory && c.chatHistory.length > 0) {
+                c.chatHistory.forEach(m => {
+                    totalMessagesFound = true;
+                    const div = document.createElement("div");
+                    div.style.cssText = "padding: 6px 10px; background: #202020; border-radius: 6px; font-size: 11px; margin-bottom: 4px; border-left: 3px solid " + (m.sender === 'client' ? '#ffd400' : '#79ee79');
+                    let imgTag = m.image ? `<br><img src="${m.image}" style="max-width:120px; border-radius:4px; margin-top:4px;">` : '';
+                    div.innerHTML = `<strong>${c.firstName} (${c.email}):</strong> [${m.sender.toUpperCase()}] ${m.text || ''} ${imgTag}`;
+                    inbox.appendChild(div);
+                });
+            }
+        });
+
+        if (!totalMessagesFound) {
+            inbox.innerHTML = `<div style="color: #777; font-size: 12px; text-align: center; padding: 20px;">No support messages yet.</div>`;
+        }
+        inbox.scrollTop = inbox.scrollHeight;
+    }
+
+    function saveClientEdits(index) {
+        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+        if (!clients[index]) return;
+
+        const fullName = document.getElementById(`adm_name_${index}`).value.trim();
+        const nameParts = fullName.split(" ");
+        clients[index].firstName = nameParts[0] || "Client";
+        clients[index].lastName = nameParts.slice(1).join(" ") || "";
+        clients[index].email = document.getElementById(`adm_email_${index}`).value.trim();
+        clients[index].phone = document.getElementById(`adm_phone_${index}`).value.trim();
+        clients[index].password = document.getElementById(`adm_pass_${index}`).value.trim();
+        clients[index].balance = document.getElementById(`adm_bal_${index}`).value.trim();
+
+        localStorage.setItem("cbkClients", JSON.stringify(clients));
+
+        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
+        if (activeUser && activeUser.email === clients[index].email) {
+            localStorage.setItem("cbkActiveUser", JSON.stringify(clients[index]));
+            document.getElementById("displayGreetingName").textContent = "HI, " + (clients[index].firstName + " " + clients[index].lastName).toUpperCase();
+            document.getElementById("displayEmail").textContent = clients[index].email;
+            document.getElementById("displayPhone").textContent = clients[index].phone;
+            document.getElementById("displayBalance").textContent = clients[index].balance;
+            document.getElementById("displayBalance").setAttribute("data-real-balance", clients[index].balance);
+            document.getElementById("outlayerBalanceText").textContent = clients[index].balance;
+        }
+
+        alert("Client account details updated successfully!");
+        renderAdminData();
+    }
+
+    /* ADMIN CUSTOM TRANSACTION & NOTIFICATION PUBLISHER */
+    function adminSubmitTransaction() {
+        const clientEmail = document.getElementById("adminTxClientSelect").value;
+        const title = document.getElementById("adminTxTitle").value.trim();
+        const type = document.getElementById("adminTxType").value;
+        const amount = document.getElementById("adminTxAmount").value.trim();
+        const desc = document.getElementById("adminTxDesc").value.trim();
+
+        if (!clientEmail || !title || !amount) {
+            alert("Please select a client and provide transaction title and amount.");
+            return;
+        }
+
+        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+        let client = clients.find(c => c.email === clientEmail);
+
+        if (!client) {
+            alert("Client not found.");
+            return;
+        }
+
+        if (!client.transactions) client.transactions = [];
+        if (!client.notifications) client.notifications = [];
+        
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + " at " + today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        client.transactions.unshift({
+            title: title,
+            type: type,
+            amount: amount,
+            desc: desc || (type === 'credit' ? 'Incoming Wire Transfer' : 'Account Withdrawal'),
+            date: dateStr
+        });
+
+        const notifTitle = type === 'credit' ? `[Email/SMS] Credit Alert: ${amount}` : `[Email/SMS] Debit Alert: ${amount}`;
+        const notifMsg = `Dear ${client.firstName}, an amount of ${amount} has been ${type === 'credit' ? 'credited to' : 'debited from'} your Korea City Bank account. Description: ${desc || title}.`;
+        
+        client.notifications.unshift({
+            title: notifTitle,
+            message: notifMsg,
+            date: dateStr,
+            read: false // Mark unread so badge count lights up
+        });
+
+        localStorage.setItem("cbkClients", JSON.stringify(clients));
+
+        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
+        if (activeUser && activeUser.email === client.email) {
+            localStorage.setItem("cbkActiveUser", JSON.stringify(client));
+            loadClientTransactions(client);
+            loadClientNotifications(client);
+        }
+
+        document.getElementById("adminTxTitle").value = "";
+        document.getElementById("adminTxAmount").value = "";
+        document.getElementById("adminTxDesc").value = "";
+        alert("Transaction published and Email/SMS notification sent successfully to client!");
+    }
+
+    function sendAdminReply() {
+        const input = document.getElementById("adminReplyInput");
+        if (!input.value.trim()) return;
+        const text = input.value;
+        input.value = "";
+        processAdminReplyTextAndImage(text, null);
+    }
+
+    function sendAdminImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                processAdminReplyTextAndImage("", e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function processAdminReplyTextAndImage(text, imgData) {
+        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
+        if (clients.length === 0) {
+            alert("No clients available to reply to.");
+            return;
+        }
+
+        let targetClient = clients[clients.length - 1];
+        if (!targetClient.chatHistory) targetClient.chatHistory = [];
+        if (!targetClient.notifications) targetClient.notifications = [];
+
+        targetClient.chatHistory.push({ sender: "admin", text: text, image: imgData });
+
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + " at " + today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        targetClient.notifications.unshift({
+            title: "Customer Service Response",
+            message: `Customer Service has replied to your inquiry.${text ? ' "' + text + '"' : ''}`,
+            date: dateStr,
+            read: false // Unread so badge count lights up
+        });
+
+        localStorage.setItem("cbkClients", JSON.stringify(clients));
+
+        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
+        if (activeUser && activeUser.email === targetClient.email) {
+            localStorage.setItem("cbkActiveUser", JSON.stringify(targetClient));
+            loadClientChat(targetClient);
+            loadClientNotifications(targetClient);
+        }
+
+        renderAdminData();
+        alert("Reply sent successfully and notification dispatched to client!");
+    }
+
+    function closeAdminPortal() {
+        document.getElementById("adminPanel").style.display = "none";
+        document.getElementById("loginSection").style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* LOGOUT */
+    function logout() {
+        localStorage.removeItem("cbkActiveUser");
+        document.getElementById("dashboard").style.display = "none";
+        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("loginForm").reset();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+</script>
+
+</body>
+</html>
