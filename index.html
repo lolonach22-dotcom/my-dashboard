@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Korea City Bank - OPay Edition</title>
+<title>Korea City Bank </title>
 <style>
     * {
         box-sizing: border-box;
@@ -120,7 +120,6 @@
         gap: 12px;
     }
 
-    /* Translator dropdown style */
     .language-select {
         background: #181818;
         border: 1px solid #333;
@@ -132,7 +131,6 @@
         cursor: pointer;
     }
 
-    /* Secret hidden trigger for admin */
     .secret-trigger {
         display: inline-flex;
         flex-direction: column;
@@ -377,7 +375,7 @@
     }
 
     /* =========================
-       BALANCE CARD (Professional Yellow Style - No Add Money, No Earned Today)
+       BALANCE CARD
     ========================== */
     .card {
         background: #202020;
@@ -434,7 +432,6 @@
         letter-spacing: 0.5px;
     }
 
-    /* Tiny transaction history link dashboard tile under balance card */
     .tiny-tx-tile {
         background: #222;
         border: 1px solid #333;
@@ -588,22 +585,6 @@
         padding: 16px;
     }
 
-    .admin-chat-list {
-        height: 180px;
-        overflow-y: auto;
-        background: #121212;
-        border: 1px solid #2a2a2a;
-        border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        word-break: break-word;
-        overflow-wrap: break-word;
-        white-space: pre-wrap;
-    }
-
     /* =========================
        MODAL POPUP OVERLAY
     ========================== */
@@ -660,177 +641,28 @@
     }
 
     /* =========================
-       DRAGGABLE & RENAMEABLE "Customer Service" CHAT WIDGET
+       DIRECT EMAIL LINK WIDGET
     ========================== */
-    .chat-fab-container {
+    .email-fab {
         position: fixed;
         bottom: 30px;
         right: 30px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: grab;
-        z-index: 999;
-        touch-action: none;
-        user-select: none;
-    }
-
-    .chat-fab-container:active {
-        cursor: grabbing;
-    }
-
-    .chat-fab-label {
-        background: #222;
-        border: 1px solid #333;
-        color: #ffd400;
-        padding: 8px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: bold;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    /* Triangular drag handle indicator */
-    .drag-handle-triangle {
-        width: 0;
-        height: 0;
-        border-top: 5px solid transparent;
-        border-bottom: 5px solid transparent;
-        border-left: 6px solid #ffd400;
-        display: inline-block;
-    }
-
-    .chat-fab {
         background: #ffd400;
         color: #121212;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 22px;
+        padding: 12px 18px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: bold;
         box-shadow: 0 4px 20px rgba(255, 212, 0, 0.4);
-        border: none;
-        pointer-events: none;
-    }
-
-    #chatPopup {
-        position: fixed;
-        bottom: 95px;
-        right: 20px;
-        width: 340px;
-        max-width: calc(100% - 40px);
-        background: #202020;
-        border: 1px solid #333;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-        display: none;
-        flex-direction: column;
-        z-index: 1000;
-        overflow: hidden;
-    }
-
-    .chat-header {
-        background: #282828;
-        padding: 14px 16px;
+        text-decoration: none;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #333;
-    }
-
-    .chat-header h4 {
-        margin: 0;
-        color: #ffd400;
-        font-size: 14px;
-    }
-
-    .chat-close {
-        background: none;
-        border: none;
-        color: #888;
-        font-size: 18px;
-        cursor: pointer;
-    }
-
-    .chat-body {
-        height: 250px;
-        overflow-y: auto;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
         gap: 8px;
-        background: #181818;
+        z-index: 999;
+        transition: transform 0.2s;
     }
-
-    .chat-msg {
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        max-width: 80%;
-        word-break: break-word;
-        overflow-wrap: break-word;
-        white-space: pre-wrap;
-    }
-
-    .chat-msg.client {
-        background: #2c2c2c;
-        align-self: flex-start;
-        color: #fff;
-    }
-
-    .chat-msg.admin {
-        background: #ffd400;
-        color: #121212;
-        align-self: flex-end;
-        font-weight: 500;
-    }
-
-    .chat-msg img {
-        max-width: 100%;
-        border-radius: 6px;
-        margin-top: 4px;
-        display: block;
-    }
-
-    .chat-footer {
-        padding: 10px;
-        background: #202020;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        border-top: 1px solid #333;
-    }
-
-    .chat-footer input {
-        flex: 1;
-        padding: 8px 10px;
-        font-size: 12px;
-    }
-
-    .chat-attach-btn {
-        background: #2a2a2a;
-        border: 1px solid #444;
-        color: #ffd400;
-        padding: 8px 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .chat-footer button.send-btn {
-        background: #ffd400;
-        color: #121212;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        font-size: 12px;
+    .email-fab:hover {
+        transform: scale(1.05);
     }
 
     /* =========================
@@ -1018,7 +850,6 @@
             <span>CBK</span> • City Bank
         </div>
         <div class="nav-right-controls">
-            <!-- Language Translator Selector -->
             <select class="language-select" id="languageSelector" onchange="changeLanguage(this.value)">
                 <option value="en">English</option>
                 <option value="ko">한국어 (Korean)</option>
@@ -1026,7 +857,6 @@
                 <option value="ja">日本語 (Japanese)</option>
                 <option value="ru">Русский (Russian)</option>
             </select>
-            <!-- Secret hidden trigger lines: Admin taps this and inputs 'operafootball' -->
             <div class="secret-trigger" onclick="openAdminPortal()" title="System Portal">
                 <span></span>
                 <span></span>
@@ -1036,10 +866,10 @@
 
     <main class="container">
 
-        <!-- ADMIN PANEL SECTION (Secured by 'operafootball') -->
+        <!-- ADMIN PANEL SECTION -->
         <section id="adminPanel">
             <h2>👑 Owner Control View</h2>
-            <p style="font-size: 13px; color: #aaa;">Full control overview of client directories, login credentials, balances, custom transactions, and customer service messages.</p>
+            <p style="font-size: 13px; color: #aaa;">Full control overview of client directories, login credentials, balances, custom transactions, and notifications.</p>
             
             <h3 style="font-size: 15px; color: #fff; margin-top: 20px;">Registered Clients Detailed Directory & Editor</h3>
             <div style="overflow-x: auto;">
@@ -1048,25 +878,23 @@
                         <tr>
                             <th>Name</th>
                             <th>Email / Phone</th>
-                            <th>Password</th>
                             <th>Balance</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="clientTableBody">
-                        <!-- Populated dynamically with full editable details -->
+                        <!-- Populated dynamically -->
                     </tbody>
                 </table>
             </div>
 
-            <!-- Admin Custom Transaction Writer -->
             <div class="admin-chat-container">
                 <h3 style="font-size: 14px; color: #ffd400; margin-top: 0;">📝 Add Transaction History & Credit Alert</h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
                     <select id="adminTxClientSelect" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px; grid-column: 1/-1;">
                         <!-- Client options -->
                     </select>
-                    <input type="text" id="adminTxTitle" placeholder="Title (e.g. Credit Alert / Big Hit)" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
+                    <input type="text" id="adminTxTitle" placeholder="Title (e.g. Credit Alert)" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
                     <select id="adminTxType" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
                         <option value="credit">Credit / Inflow (+)</option>
                         <option value="debit">Debit / Withdrawal (-)</option>
@@ -1077,29 +905,15 @@
                 <button onclick="adminSubmitTransaction()" style="width: 100%; background: #ffd400; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; color: #121212; font-size: 12px;">Publish Transaction & Trigger Email/SMS Alert</button>
             </div>
 
-            <!-- Admin Customer Service Support Inbox Section -->
-            <div class="admin-chat-container">
-                <h3 style="font-size: 14px; color: #ffd400; margin-top: 0;">💬 Customer Service Support Control Inbox</h3>
-                <div class="admin-chat-list" id="adminChatInbox">
-                    <!-- Real-time client inquiries appear here -->
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" id="adminReplyInput" placeholder="Reply to client as Customer Service...">
-                    <input type="file" id="adminReplyImageFile" accept="image/*" style="display: none;" onchange="sendAdminImage(event)">
-                    <button class="chat-attach-btn" onclick="document.getElementById('adminReplyImageFile').click()" title="Attach Image">📷</button>
-                    <button onclick="sendAdminReply()" style="background: #ffd400; border: none; padding: 0 14px; height: 38px; border-radius: 8px; font-weight: bold; cursor: pointer; color: #121212; font-size: 12px;">Send</button>
-                </div>
-            </div>
-
             <button class="logout" style="margin-top: 20px;" onclick="closeAdminPortal()">Exit Admin Panel</button>
         </section>
 
 
         <!-- REGISTRATION SECTION -->
         <section id="registration" class="auth-box">
-            <h2 data-i18n="createAccTitle">Create Your Demo Account</h2>
+            <h2 data-i18n="createAccTitle">Create Your Account</h2>
             <div class="notice" data-i18n="secRequirement">
-                Security Requirement: Please provide a valid active email, current phone number, and a secure password. You can also upload your profile photo below.
+                Quick Registration: Provide your active email and phone number to instantly register your account.
             </div>
 
             <form id="registrationForm">
@@ -1152,10 +966,6 @@
                         <label for="accountName" data-i18n="accNameLabel">Preferred account name</label>
                         <input id="accountName" type="text" required placeholder="e.g. Personal Account">
                     </div>
-                    <div class="form-group full">
-                        <label for="regPassword" data-i18n="passLabel">Create Password</label>
-                        <input id="regPassword" type="password" required placeholder="Secure password">
-                    </div>
                 </div>
 
                 <button class="primary-btn" type="submit" data-i18n="createBtn">Create Account</button>
@@ -1172,7 +982,7 @@
         <section id="loginSection" class="auth-box" style="display: none;">
             <h2 data-i18n="loginTitle">Account Login</h2>
             <div class="notice" data-i18n="loginNotice">
-                Enter your registered active email, phone number, and password to access your account dashboard.
+                Enter your registered active email and phone number to instantly access your account dashboard.
             </div>
 
             <form id="loginForm">
@@ -1185,14 +995,10 @@
                         <label for="loginPhone" data-i18n="phoneLabel">Phone number</label>
                         <input id="loginPhone" type="tel" required placeholder="+82 800 000 0000">
                     </div>
-                    <div class="form-group full">
-                        <label for="loginPassword" data-i18n="passLabel">Password</label>
-                        <input id="loginPassword" type="password" required placeholder="Your password">
-                    </div>
                 </div>
 
-                <button class="primary-btn" type="submit" data-i18n="loginBtn">Secure Login</button>
-                <div class="error-msg" id="loginError">Invalid credentials. Please verify your email, phone number, and password.</div>
+                <button class="primary-btn" type="submit" data-i18n="loginBtn">Instant Login</button>
+                <div class="error-msg" id="loginError">Account not found. Please verify your email and phone number.</div>
 
                 <div class="switch-auth">
                     <span data-i18n="noAcc">Don't have an account?</span> <span onclick="showRegisterTab()" data-i18n="createAcc">Create account</span>
@@ -1203,7 +1009,6 @@
 
         <!-- DASHBOARD SECTION -->
         <section id="dashboard">
-            <!-- TOP DASHBOARD HEADER -->
             <div class="top-dashboard-header">
                 <div class="user-profile-identity">
                     <div class="avatar-circle" onclick="document.getElementById('dashAvatarFile').click()" title="Change profile picture">
@@ -1224,12 +1029,10 @@
                 </div>
             </div>
 
-            <!-- BALANCE CARD (Professional Yellow Style - Without Add Money & Without Earned Today) -->
             <div class="card balance-card">
                 <div class="balance-header-row">
                     <div class="balance-title-area">
                         <h3 data-i18n="availableBal">Available</h3>
-                        <!-- Toggle eye icon with cancel slash mark -->
                         <button class="eye-toggle-btn" onclick="toggleBalanceVisibility()" id="balanceEyeBtn" title="Toggle Balance">
                             👁️
                         </button>
@@ -1238,13 +1041,11 @@
                 <div class="amount" id="displayBalance">₩122,324,000</div>
             </div>
 
-            <!-- TINY TRANSACTION HISTORY TILE UNDER BALANCE -->
             <div class="tiny-tx-tile" onclick="openTransactionOutlayer()">
                 <p data-i18n="txHistoryTitle">📋 Transaction History</p>
                 <span data-i18n="viewRecords">View Records →</span>
             </div>
 
-            <!-- QUICK ACTIONS -->
             <div class="card" style="background: transparent; border: none; padding: 0; margin-bottom: 16px;">
                 <h3 style="font-size: 15px; margin-bottom: 12px; color: #fff;" data-i18n="quickActions">Quick Actions</h3>
                 <div class="dashboard-grid">
@@ -1267,7 +1068,6 @@
                 </div>
             </div>
 
-            <!-- SAVINGS CHALLENGE -->
             <div class="card">
                 <h3 style="margin-top:0; font-size:15px; color:#fff;" data-i18n="savingsTitle">26-Week Savings Challenge</h3>
                 <p style="font-size: 13px; color: #999;" data-i18n="savingsDesc">Progress toward your savings target.</p>
@@ -1278,7 +1078,6 @@
                 <p style="font-size: 12px; color: #aaa; margin: 4px 0 0;" data-i18n="savingsReward">Character reward: Gold Saver</p>
             </div>
 
-            <!-- PROFILE CARD -->
             <div class="card profile-info">
                 <h3 style="margin-top:0; font-size:15px; color:#fff;" data-i18n="profileDetails">Profile Details</h3>
                 <p><strong><span data-i18n="nationalityLabel">Nationality</span>:</strong> <span id="displayNationality"></span></p>
@@ -1340,31 +1139,11 @@
 </div>
 
 <!-- =========================
-     DRAGGABLE & RENAMEABLE "Customer Service" WIDGET
+     DIRECT EMAIL LINK BUTTON
 ========================== -->
-<div class="chat-fab-container" id="draggableChatFab" onclick="toggleChatPopup()">
-    <div class="chat-fab-label">
-        <span class="drag-handle-triangle" title="Drag me"></span>
-        Customer Service
-    </div>
-    <button class="chat-fab" title="Customer Service Center">💬</button>
-</div>
-
-<div id="chatPopup">
-    <div class="chat-header">
-        <h4 data-i18n="csCenterTitle">Customer Service Support Center</h4>
-        <button class="chat-close" onclick="toggleChatPopup()">✕</button>
-    </div>
-    <div class="chat-body" id="clientChatBox">
-        <div class="chat-msg admin">Customer Service: Hello! How can we assist you with your Korea City Bank account today?</div>
-    </div>
-    <div class="chat-footer">
-        <input type="text" id="clientChatInput" placeholder="Type message..." data-i18n-placeholder="typeMsgPlaceholder">
-        <input type="file" id="clientChatImageFile" accept="image/*" style="display: none;" onchange="sendClientImage(event)">
-        <button class="chat-attach-btn" onclick="document.getElementById('clientChatImageFile').click()" title="Attach Image">📷</button>
-        <button class="send-btn" onclick="sendClientMessage()" data-i18n="sendBtn">Send</button>
-    </div>
-</div>
+<a href="mailto:Supportchat004@gmail.com" class="email-fab" title="Message Support">
+    ✉️ Support Email
+</a>
 
 <!-- =========================
      POPUP MODAL OVERLAY
@@ -1378,14 +1157,11 @@
 </div>
 
 <script>
-    /* =========================
-       TRANSLATOR DICTIONARY
-    ========================== */
     const translations = {
         en: {
             brandName: "CBK • City Bank",
-            createAccTitle: "Create Your Demo Account",
-            secRequirement: "Security Requirement: Please provide a valid active email, current phone number, and a secure password. You can also upload your profile photo below.",
+            createAccTitle: "Create Your  Account",
+            secRequirement: "Quick Registration: Provide your active email and phone number to instantly register your  account.",
             profilePicLabel: "Profile Picture",
             tapCircleText: "Tap circle to add picture",
             firstNameLabel: "First name",
@@ -1395,13 +1171,12 @@
             nationalityLabel: "Nationality",
             professionLabel: "Profession",
             accNameLabel: "Preferred account name",
-            passLabel: "Create Password",
             createBtn: "Create Account",
             alreadyHaveAcc: "Already have an account?",
             loginHere: "Log in here",
             loginTitle: "Account Login",
-            loginNotice: "Enter your registered active email, phone number, and password to access your account dashboard.",
-            loginBtn: "Secure Login",
+            loginNotice: "Enter your registered active email and phone number to instantly access your account dashboard.",
+            loginBtn: "Instant Login",
             noAcc: "Don't have an account?",
             createAcc: "Create account",
             availableBal: "Available",
@@ -1431,15 +1206,12 @@
             notifInboxTitle: "Email & SMS Alert Inbox",
             notifInboxDesc: "Simulated official bank notifications received on your registered email and phone number feed.",
             noNotifFound: "No notifications yet.",
-            csCenterTitle: "Customer Service Support Center",
-            typeMsgPlaceholder: "Type message...",
-            sendBtn: "Send",
             gotItBtn: "Got it"
         },
         ko: {
             brandName: "CBK • 시티 은행",
             createAccTitle: "데모 계정 생성",
-            secRequirement: "보안 요구 사항: 유효한 활성 이메일, 현재 전화번호, 보안 비밀번호를 입력하세요. 프로필 사진도 업로드할 수 있습니다.",
+            secRequirement: "빠른 등록: 활성 이메일과 전화번호를 입력하여 즉시 데모 계정을 만드세요.",
             profilePicLabel: "프로필 사진",
             tapCircleText: "원을 눌러 사진 추가",
             firstNameLabel: "이름",
@@ -1449,13 +1221,12 @@
             nationalityLabel: "국적",
             professionLabel: "직업",
             accNameLabel: "선호하는 계정 이름",
-            passLabel: "비밀번호 생성",
             createBtn: "계정 만들기",
             alreadyHaveAcc: "이미 계정이 있으신가요?",
             loginHere: "여기서 로그인",
             loginTitle: "계정 로그인",
-            loginNotice: "등록된 활성 이메일, 전화번호, 비밀번호를 입력하여 대시보드에 접속하세요.",
-            loginBtn: "안전한 로그인",
+            loginNotice: "등록된 활성 이메일과 전화번호를 입력하여 대시보드에 즉시 접속하세요.",
+            loginBtn: "즉시 로그인",
             noAcc: "계정이 없으신가요?",
             createAcc: "계정 만들기",
             availableBal: "사용 가능 잔액",
@@ -1485,15 +1256,12 @@
             notifInboxTitle: "이메일 및 SMS 알림 수신함",
             notifInboxDesc: "등록된 이메일 및 전화번호 피드로 수신된 시뮬레이션 공식 은행 알림입니다.",
             noNotifFound: "알림이 없습니다.",
-            csCenterTitle: "고객센터 지원 센터",
-            typeMsgPlaceholder: "메시지를 입력하세요...",
-            sendBtn: "보내기",
             gotItBtn: "확인"
         },
         zh: {
             brandName: "CBK • 花旗银行",
             createAccTitle: "创建您的演示账户",
-            secRequirement: "安全要求：请提供有效的活动电子邮件、当前电话号码和安全密码。您还可以在下方上传个人资料照片。",
+            secRequirement: "快速注册：提供您的活动邮箱和电话号码即可立即注册演示账户。",
             profilePicLabel: "个人头像",
             tapCircleText: "点击圆圈添加图片",
             firstNameLabel: "名",
@@ -1503,13 +1271,12 @@
             nationalityLabel: "国籍",
             professionLabel: "职业",
             accNameLabel: "首选账户名称",
-            passLabel: "创建密码",
             createBtn: "创建账户",
             alreadyHaveAcc: "已有账户？",
             loginHere: "在此登录",
             loginTitle: "账户登录",
-            loginNotice: "输入您注册的活动邮箱、电话号码和密码以访问您的账户仪表板。",
-            loginBtn: "安全登录",
+            loginNotice: "输入您注册的活动邮箱和电话号码即可访问您的账户仪表板。",
+            loginBtn: "立即登录",
             noAcc: "没有账户？",
             createAcc: "创建账户",
             availableBal: "可用余额",
@@ -1539,15 +1306,12 @@
             notifInboxTitle: "电子邮件和短信提醒收件箱",
             notifInboxDesc: "在您注册的电子邮件和电话号码feed上收到的模拟官方银行通知。",
             noNotifFound: "暂无通知。",
-            csCenterTitle: "客户服务支持中心",
-            typeMsgPlaceholder: "输入消息...",
-            sendBtn: "发送",
             gotItBtn: "知道了"
         },
         ja: {
             brandName: "CBK • シティバンク",
             createAccTitle: "デモアカウントの作成",
-            secRequirement: "セキュリティ要件：有効な有効メール、現在の電話番号、および安全なパスワードを入力してください。プロフィール写真もアップロードできます。",
+            secRequirement: "クイック登録：有効なメールアドレスと電話番号を入力してデモアカウントをすぐに作成します。",
             profilePicLabel: "プロフィール写真",
             tapCircleText: "丸をタップして画像を追加",
             firstNameLabel: "名",
@@ -1557,13 +1321,12 @@
             nationalityLabel: "国籍",
             professionLabel: "職業",
             accNameLabel: "希望アカウント名",
-            passLabel: "パスワードの作成",
             createBtn: "アカウント作成",
             alreadyHaveAcc: "すでにアカウントをお持ちですか？",
             loginHere: "ログインはこちら",
             loginTitle: "アカウントログイン",
-            loginNotice: "登録済みの有効なメールアドレス、電話番号、パスワードを入力してダッシュボードにアクセスしてください。",
-            loginBtn: "安全なログイン",
+            loginNotice: "登録済みのメールアドレスと電話番号を入力してダッシュボードにアクセスしてください。",
+            loginBtn: "すぐログイン",
             noAcc: "アカウントをお持ちではありませんか？",
             createAcc: "アカウント作成",
             availableBal: "利用可能残高",
@@ -1593,15 +1356,12 @@
             notifInboxTitle: "メール・SMS通知受信トレイ",
             notifInboxDesc: "登録されたメールおよび電話番号フィードに受信されたシミュレートされた公式銀行通知。",
             noNotifFound: "通知はありません。",
-            csCenterTitle: "カスタマーサービスサポートセンター",
-            typeMsgPlaceholder: "メッセージを入力...",
-            sendBtn: "送信",
             gotItBtn: "了解"
         },
         ru: {
             brandName: "CBK • City Bank",
             createAccTitle: "Создать демо-аккаунт",
-            secRequirement: "Требование безопасности: укажите действующий активный адрес электронной почты, номер телефона и надежный пароль. Вы также можете загрузить фото профиля.",
+            secRequirement: "Быстрая регистрация: укажите email и номер телефона для мгновенной регистрации.",
             profilePicLabel: "Фото профиля",
             tapCircleText: "Нажмите на круг, чтобы добавить фото",
             firstNameLabel: "Имя",
@@ -1610,14 +1370,13 @@
             phoneLabel: "Номер телефона",
             nationalityLabel: "Национальность",
             professionLabel: "Профессия",
-            accNameLabel: "Предпочтительное имя аккаунта",
-            passLabel: "Создать пароль",
+            accNameLabel: "Имя аккаунта",
             createBtn: "Создать аккаунт",
             alreadyHaveAcc: "Уже есть аккаунт?",
             loginHere: "Войти здесь",
             loginTitle: "Вход в аккаунт",
-            loginNotice: "Введите зарегистрированный адрес эл. почты, номер телефона и пароль для доступа к панели управления.",
-            loginBtn: "Безопасный вход",
+            loginNotice: "Введите зарегистрированный email и номер телефона для доступа.",
+            loginBtn: "Быстрый вход",
             noAcc: "Нет аккаунта?",
             createAcc: "Создать аккаунт",
             availableBal: "Доступно",
@@ -1645,11 +1404,8 @@
             activityRecords: "Записи активности",
             noTxFound: "Записи транзакций не найдены.",
             notifInboxTitle: "Входящие уведомлений (Email & SMS)",
-            notifInboxDesc: "Симулированные официальные банковские уведомления, полученные на ваш адрес эл. почты и телефон.",
+            notifInboxDesc: "Симулированные официальные банковские уведомления.",
             noNotifFound: "Уведомлений пока нет.",
-            csCenterTitle: "Центр поддержки клиентов",
-            typeMsgPlaceholder: "Введите сообщение...",
-            sendBtn: "Отправить",
             gotItBtn: "Понятно"
         }
     };
@@ -1666,16 +1422,8 @@
                 el.textContent = dict[key];
             }
         });
-
-        document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-            const key = el.getAttribute("data-i18n-placeholder");
-            if (dict[key]) {
-                el.placeholder = dict[key];
-            }
-        });
     }
 
-    /* LOADER */
     window.addEventListener("load", function () {
         setTimeout(function () {
             const loader = document.getElementById("loader");
@@ -1688,60 +1436,6 @@
         }, 1500);
     });
 
-    /* =========================
-       DRAGGABLE WIDGET LOGIC (Mouse & Touch)
-    ========================== */
-    const draggableFab = document.getElementById("draggableChatFab");
-    let isDragging = false;
-    let startX, startY, initialX, initialY;
-    let hasMoved = false;
-
-    draggableFab.addEventListener("pointerdown", function(e) {
-        isDragging = true;
-        hasMoved = false;
-        startX = e.clientX;
-        startY = e.clientY;
-        const rect = draggableFab.getBoundingClientRect();
-        initialX = rect.left;
-        initialY = rect.top;
-        draggableFab.setPointerCapture(e.pointerId);
-    });
-
-    draggableFab.addEventListener("pointermove", function(e) {
-        if (!isDragging) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-            hasMoved = true;
-        }
-
-        let newX = initialX + dx;
-        let newY = initialY + dy;
-
-        const maxX = window.innerWidth - draggableFab.offsetWidth;
-        const maxY = window.innerHeight - draggableFab.offsetHeight;
-        newX = Math.max(10, Math.min(newX, maxX - 10));
-        newY = Math.max(10, Math.min(newY, maxY - 10));
-
-        draggableFab.style.left = newX + "px";
-        draggableFab.style.top = newY + "px";
-        draggableFab.style.bottom = "auto";
-        draggableFab.style.right = "auto";
-    });
-
-    draggableFab.addEventListener("pointerup", function(e) {
-        isDragging = false;
-        draggableFab.releasePointerCapture(e.pointerId);
-    });
-
-    draggableFab.addEventListener("click", function(e) {
-        if (hasMoved) {
-            e.stopImmediatePropagation();
-            hasMoved = false;
-        }
-    });
-
-    /* TAB SWITCHING UTILS */
     function showLoginTab() {
         document.getElementById("registration").style.display = "none";
         document.getElementById("loginSection").style.display = "block";
@@ -1752,7 +1446,6 @@
         document.getElementById("registration").style.display = "block";
     }
 
-    /* REGISTRATION AVATAR PREVIEW */
     let tempRegAvatarData = "";
     function previewRegAvatar(event) {
         const file = event.target.files[0];
@@ -1768,7 +1461,6 @@
         }
     }
 
-    /* REGISTRATION LOGIC */
     document.getElementById("registrationForm").addEventListener("submit", function(event) {
         event.preventDefault();
 
@@ -1779,15 +1471,14 @@
         const nationality = document.getElementById("nationality").value;
         const profession = document.getElementById("profession").value.trim();
         const accountName = document.getElementById("accountName").value.trim();
-        const password = document.getElementById("regPassword").value;
         const balance = "₩122,324,000";
         const avatar = tempRegAvatarData || "";
 
         let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
         
         const newClient = { 
-            firstName, lastName, email, phone, nationality, profession, accountName, password, balance, avatar, 
-            chatHistory: [], transactions: [], notifications: [] 
+            firstName, lastName, email, phone, nationality, profession, accountName, balance, avatar, 
+            transactions: [], notifications: [] 
         };
         clients.push(newClient);
         localStorage.setItem("cbkClients", JSON.stringify(clients));
@@ -1799,16 +1490,14 @@
         }, 1500);
     });
 
-    /* LOGIN VERIFICATION LOGIC */
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
 
         const email = document.getElementById("loginEmail").value.trim();
         const phone = document.getElementById("loginPhone").value.trim();
-        const password = document.getElementById("loginPassword").value;
 
         let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-        const matchedClient = clients.find(c => c.email === email && c.phone === phone && c.password === password);
+        const matchedClient = clients.find(c => c.email === email && c.phone === phone);
 
         if (matchedClient) {
             document.getElementById("loginError").style.display = "none";
@@ -1842,7 +1531,6 @@
             document.getElementById("dashAvatarInitial").textContent = clientObj.firstName.charAt(0).toUpperCase();
         }
 
-        loadClientChat(clientObj);
         loadClientTransactions(clientObj);
         loadClientNotifications(clientObj);
 
@@ -1854,7 +1542,6 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    /* DASHBOARD AVATAR UPDATE */
     function updateDashAvatar(event) {
         const file = event.target.files[0];
         if (file) {
@@ -1882,7 +1569,6 @@
         }
     }
 
-    /* TOGGLE BALANCE VISIBILITY (EYE ICON MASK) */
     let isBalanceHidden = false;
     function toggleBalanceVisibility() {
         const balanceEl = document.getElementById("displayBalance");
@@ -1891,7 +1577,7 @@
         if (!isBalanceHidden) {
             balanceEl.setAttribute("data-real-balance", balanceEl.textContent);
             balanceEl.textContent = "••••••••";
-            eyeBtn.innerHTML = "👁️‍🗨️";
+            eyeBtn.innerHTML = "👁️‍🗨";
             isBalanceHidden = true;
         } else {
             balanceEl.textContent = balanceEl.getAttribute("data-real-balance") || "₩122,324,000";
@@ -1900,7 +1586,6 @@
         }
     }
 
-    /* POPUP MODAL LOGIC */
     function showModal(type) {
         const overlay = document.getElementById("modalOverlay");
         const title = document.getElementById("modalTitle");
@@ -1910,10 +1595,10 @@
 
         if (type === "withdraw") {
             title.textContent = "Withdrawal Clearance Required";
-            text.innerHTML = "This is a demonstration withdrawal process.<br><br>Before your payment can be processed, a clearance fee is required. Please use the Customer Service support center to speak with an agent.";
+            text.innerHTML = "This is a demonstration withdrawal process.<br><br>Before your payment can be processed, a clearance fee is required. Please use support email to contact us.";
         } else if (type === "transfer") {
             title.textContent = "Transfer Clearance Required";
-            text.innerHTML = "This is a demonstration of the transfer process.<br><br>Before funds can be transferred, a clearance fee is required. Please use the Customer Service support center to speak with an agent.";
+            text.innerHTML = "This is a demonstration of the transfer process.<br><br>Before funds can be transferred, a clearance fee is required. Please use support email to contact us.";
         } else {
             title.textContent = "Investments";
             text.innerHTML = "Explore modern portfolio tracking and automated investment allocations.";
@@ -1924,7 +1609,6 @@
         document.getElementById("modalOverlay").style.display = "none";
     }
 
-    /* OUTLAYER TRANSACTION HISTORY */
     function openTransactionOutlayer() {
         let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
         if (activeUser) {
@@ -1972,7 +1656,6 @@
         });
     }
 
-    /* NOTIFICATION INBOX & AUTO-CLEARING BADGE */
     function toggleNotificationOutlayer() {
         const outlayer = document.getElementById("notificationOutlayer");
         if (outlayer.style.display === "flex") {
@@ -1984,7 +1667,6 @@
                 let fresh = clients.find(c => c.email === activeUser.email);
                 if (fresh) {
                     activeUser = fresh;
-                    // Auto clear unread notification count upon viewing inbox
                     activeUser.notifications.forEach(n => n.read = true);
                     localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
 
@@ -2012,7 +1694,6 @@
             return;
         }
 
-        // Count unread notifications
         const unreadCount = user.notifications.filter(n => !n.read).length;
         if (unreadCount > 0) {
             badge.style.display = "inline-block";
@@ -2033,97 +1714,6 @@
         });
     }
 
-    /* CHAT POPUP & IMAGE SHARING */
-    function toggleChatPopup() {
-        const popup = document.getElementById("chatPopup");
-        if (popup.style.display === "flex") {
-            popup.style.display = "none";
-        } else {
-            let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
-            if (activeUser) {
-                let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-                let fresh = clients.find(c => c.email === activeUser.email);
-                if (fresh) {
-                    activeUser = fresh;
-                    localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
-                    loadClientChat(activeUser);
-                }
-            }
-            popup.style.display = "flex";
-        }
-    }
-
-    function loadClientChat(user) {
-        const box = document.getElementById("clientChatBox");
-        box.innerHTML = `<div class="chat-msg admin">Customer Service: Hello! How can we assist you with your Korea City Bank account today?</div>`;
-        
-        if (user.chatHistory && user.chatHistory.length > 0) {
-            user.chatHistory.forEach(msg => {
-                const msgDiv = document.createElement("div");
-                msgDiv.className = "chat-msg " + msg.sender;
-                
-                let contentHTML = `<strong>${msg.sender === "client" ? "Client" : "Customer Service"}:</strong> `;
-                if (msg.text) {
-                    contentHTML += `<span>${msg.text}</span>`;
-                }
-                if (msg.image) {
-                    contentHTML += `<img src="${msg.image}" alt="Attached image">`;
-                }
-                msgDiv.innerHTML = contentHTML;
-                box.appendChild(msgDiv);
-            });
-        }
-        box.scrollTop = box.scrollHeight;
-    }
-
-    function sendClientMessage() {
-        const input = document.getElementById("clientChatInput");
-        if (!input.value.trim()) return;
-
-        const text = input.value;
-        input.value = "";
-
-        saveAndAppendClientMessage(text, null);
-    }
-
-    function sendClientImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                saveAndAppendClientMessage("", e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function saveAndAppendClientMessage(text, imgData) {
-        const box = document.getElementById("clientChatBox");
-        const msgDiv = document.createElement("div");
-        msgDiv.className = "chat-msg client";
-        let html = `<strong>Client:</strong> `;
-        if (text) html += `<span>${text}</span>`;
-        if (imgData) html += `<img src="${imgData}" alt="Attached image">`;
-        msgDiv.innerHTML = html;
-        box.appendChild(msgDiv);
-        box.scrollTop = box.scrollHeight;
-
-        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
-        if (activeUser) {
-            if (!activeUser.chatHistory) activeUser.chatHistory = [];
-            activeUser.chatHistory.push({ sender: "client", text: text, image: imgData });
-            localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
-
-            let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-            let idx = clients.findIndex(c => c.email === activeUser.email);
-            if (idx !== -1) {
-                clients[idx] = activeUser;
-                localStorage.setItem("cbkClients", JSON.stringify(clients));
-            }
-        }
-    }
-
-    /* ADMIN PORTAL ACCESS WITH 'operafootball' */
     function openAdminPortal() {
         const pass = prompt("Enter passcode:");
         if (pass === "operafootball") {
@@ -2148,7 +1738,7 @@
         txSelect.innerHTML = "";
 
         if (clients.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">No registered clients yet.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#888;">No registered clients yet.</td></tr>`;
             txSelect.innerHTML = `<option value="">No clients available</option>`;
         } else {
             clients.forEach((c, index) => {
@@ -2164,35 +1754,12 @@
                         <input type="text" id="adm_email_${index}" value="${c.email}" style="margin-bottom:4px;">
                         <input type="text" id="adm_phone_${index}" value="${c.phone}">
                     </td>
-                    <td><input type="text" id="adm_pass_${index}" value="${c.password}"></td>
                     <td><input type="text" id="adm_bal_${index}" value="${c.balance || '₩122,324,000'}" style="color: #ffd400; font-weight: bold;"></td>
                     <td><button onclick="saveClientEdits(${index})" style="background: #ffd400; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; color: #121212; font-size: 11px;">Save</button></td>
                 `;
                 tableBody.appendChild(row);
             });
         }
-
-        const inbox = document.getElementById("adminChatInbox");
-        inbox.innerHTML = "";
-        let totalMessagesFound = false;
-
-        clients.forEach(c => {
-            if (c.chatHistory && c.chatHistory.length > 0) {
-                c.chatHistory.forEach(m => {
-                    totalMessagesFound = true;
-                    const div = document.createElement("div");
-                    div.style.cssText = "padding: 6px 10px; background: #202020; border-radius: 6px; font-size: 11px; margin-bottom: 4px; border-left: 3px solid " + (m.sender === 'client' ? '#ffd400' : '#79ee79');
-                    let imgTag = m.image ? `<br><img src="${m.image}" style="max-width:120px; border-radius:4px; margin-top:4px;">` : '';
-                    div.innerHTML = `<strong>${c.firstName} (${c.email}):</strong> [${m.sender.toUpperCase()}] ${m.text || ''} ${imgTag}`;
-                    inbox.appendChild(div);
-                });
-            }
-        });
-
-        if (!totalMessagesFound) {
-            inbox.innerHTML = `<div style="color: #777; font-size: 12px; text-align: center; padding: 20px;">No support messages yet.</div>`;
-        }
-        inbox.scrollTop = inbox.scrollHeight;
     }
 
     function saveClientEdits(index) {
@@ -2205,7 +1772,6 @@
         clients[index].lastName = nameParts.slice(1).join(" ") || "";
         clients[index].email = document.getElementById(`adm_email_${index}`).value.trim();
         clients[index].phone = document.getElementById(`adm_phone_${index}`).value.trim();
-        clients[index].password = document.getElementById(`adm_pass_${index}`).value.trim();
         clients[index].balance = document.getElementById(`adm_bal_${index}`).value.trim();
 
         localStorage.setItem("cbkClients", JSON.stringify(clients));
@@ -2225,7 +1791,6 @@
         renderAdminData();
     }
 
-    /* ADMIN CUSTOM TRANSACTION & NOTIFICATION PUBLISHER */
     function adminSubmitTransaction() {
         const clientEmail = document.getElementById("adminTxClientSelect").value;
         const title = document.getElementById("adminTxTitle").value.trim();
@@ -2267,7 +1832,7 @@
             title: notifTitle,
             message: notifMsg,
             date: dateStr,
-            read: false // Mark unread so badge count lights up
+            read: false
         });
 
         localStorage.setItem("cbkClients", JSON.stringify(clients));
@@ -2285,68 +1850,12 @@
         alert("Transaction published and Email/SMS notification sent successfully to client!");
     }
 
-    function sendAdminReply() {
-        const input = document.getElementById("adminReplyInput");
-        if (!input.value.trim()) return;
-        const text = input.value;
-        input.value = "";
-        processAdminReplyTextAndImage(text, null);
-    }
-
-    function sendAdminImage(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                processAdminReplyTextAndImage("", e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function processAdminReplyTextAndImage(text, imgData) {
-        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-        if (clients.length === 0) {
-            alert("No clients available to reply to.");
-            return;
-        }
-
-        let targetClient = clients[clients.length - 1];
-        if (!targetClient.chatHistory) targetClient.chatHistory = [];
-        if (!targetClient.notifications) targetClient.notifications = [];
-
-        targetClient.chatHistory.push({ sender: "admin", text: text, image: imgData });
-
-        const today = new Date();
-        const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + " at " + today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        targetClient.notifications.unshift({
-            title: "Customer Service Response",
-            message: `Customer Service has replied to your inquiry.${text ? ' "' + text + '"' : ''}`,
-            date: dateStr,
-            read: false // Unread so badge count lights up
-        });
-
-        localStorage.setItem("cbkClients", JSON.stringify(clients));
-
-        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
-        if (activeUser && activeUser.email === targetClient.email) {
-            localStorage.setItem("cbkActiveUser", JSON.stringify(targetClient));
-            loadClientChat(targetClient);
-            loadClientNotifications(targetClient);
-        }
-
-        renderAdminData();
-        alert("Reply sent successfully and notification dispatched to client!");
-    }
-
     function closeAdminPortal() {
         document.getElementById("adminPanel").style.display = "none";
         document.getElementById("loginSection").style.display = "block";
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    /* LOGOUT */
     function logout() {
         localStorage.removeItem("cbkActiveUser");
         document.getElementById("dashboard").style.display = "none";
