@@ -1305,7 +1305,7 @@
         <div class="mini-balance-box">
             <div>
                 <span data-i18n="currBalSummary">Current Balance Summary</span>
-                <h4 id="outlayerBalanceText">₩122,324,000</h4>
+                <h4 id="outlayerBalanceText">₩0.00</h4>
             </div>
             <div style="text-align: right;">
                 <span data-i18n="statusLabel">Status</span>
@@ -1780,7 +1780,7 @@
         const profession = document.getElementById("profession").value.trim();
         const accountName = document.getElementById("accountName").value.trim();
         const password = document.getElementById("regPassword").value;
-        const balance = "₩122,324,000";
+        const balance = "₩0.00 ";
         const avatar = tempRegAvatarData || "";
 
         let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
@@ -1827,7 +1827,7 @@
         document.getElementById("displayEmail").textContent = clientObj.email;
         document.getElementById("displayPhone").textContent = clientObj.phone;
         
-        const currentBal = clientObj.balance || "₩122,324,000";
+        const currentBal = clientObj.balance || "₩0.00";
         document.getElementById("displayBalance").setAttribute("data-real-balance", currentBal);
         document.getElementById("displayBalance").textContent = currentBal;
         document.getElementById("outlayerBalanceText").textContent = currentBal;
@@ -1934,7 +1934,7 @@
                 activeUser = fresh;
                 localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
                 loadClientTransactions(activeUser);
-                const currentBal = activeUser.balance || "₩122,324,000";
+                const currentBal = activeUser.balance || "₩0.00";
                 document.getElementById("outlayerBalanceText").textContent = currentBal;
             }
         }
