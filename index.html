@@ -1,1879 +1,1079 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Korea City Bank </title>
-<style>
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: #121212;
-        color: #e0e0e0;
-        user-select: none;
-    }
-
-    button, input, select {
-        font: inherit;
-    }
-
-    /* =========================
-       LOADER
-    ========================== */
-    #loader {
-        position: fixed;
-        inset: 0;
-        background: #121212;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        transition: opacity .5s ease;
-    }
-
-    .loader-logo {
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
-        background: #ffd400;
-        color: #121212;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 40px;
-        font-weight: bold;
-        margin-bottom: 20px;
-        box-shadow: 0 8px 30px rgba(255, 212, 0, 0.25);
-    }
-
-    #loader h1 {
-        margin: 0 0 5px;
-        color: #fff;
-        font-size: 22px;
-    }
-
-    #loader p {
-        color: #888;
-        margin: 0;
-        font-size: 14px;
-    }
-
-    .spinner {
-        width: 28px;
-        height: 28px;
-        border: 3px solid #333;
-        border-top-color: #ffd400;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-top: 20px;
-    }
-
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    /* =========================
-       APP CONTAINER
-    ========================== */
-    #app {
-        display: none;
-        min-height: 100vh;
-        background: #181818;
-        color: #f0f0f0;
-    }
-
-    .navbar {
-        height: 65px;
-        background: #1e1e1e;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 5%;
-        border-bottom: 1px solid #2a2a2a;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-
-    .brand {
-        font-weight: bold;
-        font-size: 18px;
-        letter-spacing: 0.5px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .brand span {
-        color: #ffd400;
-    }
-
-    .nav-right-controls {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .language-select {
-        background: #181818;
-        border: 1px solid #333;
-        color: #ffd400;
-        padding: 6px 10px;
-        border-radius: 8px;
-        font-size: 12px;
-        outline: none;
-        cursor: pointer;
-    }
-
-    .secret-trigger {
-        display: inline-flex;
-        flex-direction: column;
-        gap: 3px;
-        cursor: pointer;
-        padding: 8px;
-    }
-    .secret-trigger span {
-        display: block;
-        width: 14px;
-        height: 2px;
-        background: #444;
-        border-radius: 2px;
-    }
-
-    .container {
-        max-width: 600px;
-        margin: auto;
-        padding: 20px 16px 80px;
-    }
-
-    /* =========================
-       AUTH (LOGIN / REGISTER)
-    ========================== */
-    .auth-box {
-        background: #202020;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-        border: 1px solid #2d2d2d;
-        margin-top: 20px;
-    }
-
-    .auth-box h2 {
-        margin-top: 0;
-        color: #fff;
-        font-size: 20px;
-    }
-
-    .notice {
-        background: rgba(255, 212, 0, 0.08);
-        border-left: 4px solid #ffd400;
-        padding: 12px 14px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        color: #ccc;
-        font-size: 13px;
-        line-height: 1.4;
-    }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .form-group.full {
-        grid-column: 1 / -1;
-    }
-
-    label {
-        font-size: 12px;
-        font-weight: 600;
-        margin-bottom: 6px;
-        color: #aaa;
-    }
-
-    input, select {
-        border: 1px solid #333;
-        padding: 12px;
-        border-radius: 10px;
-        outline: none;
-        background: #181818;
-        color: #fff;
-        font-size: 14px;
-    }
-
-    input:focus, select:focus {
-        border-color: #ffd400;
-        box-shadow: 0 0 0 2px rgba(255, 212, 0, 0.15);
-    }
-
-    .primary-btn {
-        width: 100%;
-        border: 0;
-        background: #ffd400;
-        color: #121212;
-        font-weight: bold;
-        padding: 14px;
-        border-radius: 10px;
-        cursor: pointer;
-        margin-top: 20px;
-        font-size: 15px;
-        transition: background 0.2s;
-    }
-
-    .primary-btn:hover {
-        background: #e6be00;
-    }
-
-    .switch-auth {
-        text-align: center;
-        margin-top: 15px;
-        font-size: 13px;
-        color: #888;
-    }
-
-    .switch-auth span {
-        color: #ffd400;
-        cursor: pointer;
-        font-weight: bold;
-    }
-
-    .error-msg {
-        display: none;
-        margin-top: 15px;
-        padding: 12px;
-        background: rgba(220, 53, 69, 0.2);
-        color: #ff8b94;
-        border-radius: 8px;
-        font-size: 13px;
-        border: 1px solid rgba(220, 53, 69, 0.4);
-    }
-
-    .success {
-        display: none;
-        margin-top: 15px;
-        padding: 12px;
-        background: rgba(36, 97, 36, 0.2);
-        color: #79ee79;
-        border-radius: 8px;
-        font-size: 13px;
-        border: 1px solid rgba(36, 97, 36, 0.4);
-    }
-
-    /* =========================
-       DASHBOARD HEADER & TOP BAR
-    ========================== */
-    #dashboard {
-        display: none;
-    }
-
-    .top-dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        background: #202020;
-        padding: 16px;
-        border-radius: 16px;
-        border: 1px solid #2d2d2d;
-    }
-
-    .user-profile-identity {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .avatar-circle {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #333;
-        border: 2px solid #ffd400;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        cursor: pointer;
-        position: relative;
-    }
-
-    .avatar-circle img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .avatar-placeholder {
-        font-size: 20px;
-        font-weight: bold;
-        color: #ffd400;
-    }
-
-    .greeting-box h2 {
-        margin: 0;
-        font-size: 18px;
-        color: #fff;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .greeting-box p {
-        margin: 2px 0 0;
-        font-size: 12px;
-        color: #888;
-    }
-
-    .top-action-icons {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .icon-btn {
-        background: #282828;
-        border: 1px solid #333;
-        color: #ffd400;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        position: relative;
-        font-size: 16px;
-        transition: border-color 0.2s;
-    }
-
-    .icon-btn:hover {
-        border-color: #ffd400;
-    }
-
-    .badge-count {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        background: #ff4d4d;
-        color: #fff;
-        font-size: 9px;
-        font-weight: bold;
-        padding: 2px 5px;
-        border-radius: 10px;
-        border: 1px solid #181818;
-    }
-
-    /* =========================
-       BALANCE CARD
-    ========================== */
-    .card {
-        background: #202020;
-        border: 1px solid #2d2d2d;
-        padding: 20px;
-        border-radius: 16px;
-        margin-bottom: 16px;
-    }
-
-    .balance-card {
-        background: linear-gradient(135deg, #ffd400, #e6be00);
-        color: #121212;
-        border: none;
-        position: relative;
-        box-shadow: 0 8px 25px rgba(255, 212, 0, 0.2);
-    }
-
-    .balance-header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .balance-title-area {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .balance-card h3 {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-        opacity: 0.85;
-    }
-
-    .eye-toggle-btn {
-        background: none;
-        border: none;
-        color: #121212;
-        cursor: pointer;
-        font-size: 16px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        opacity: 0.85;
-    }
-
-    .amount {
-        font-size: 34px;
-        font-weight: 800;
-        margin: 16px 0 4px;
-        letter-spacing: 0.5px;
-    }
-
-    .tiny-tx-tile {
-        background: #222;
-        border: 1px solid #333;
-        padding: 12px 16px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        cursor: pointer;
-        transition: border-color 0.2s;
-    }
-    .tiny-tx-tile:hover {
-        border-color: #ffd400;
-    }
-    .tiny-tx-tile span {
-        font-size: 12px;
-        color: #ffd400;
-        font-weight: 600;
-    }
-    .tiny-tx-tile p {
-        margin: 0;
-        font-size: 13px;
-        color: #ccc;
-        font-weight: 500;
-    }
-
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .feature {
-        background: #272727;
-        padding: 16px;
-        border-radius: 12px;
-        border: 1px solid #333;
-        cursor: pointer;
-        transition: border-color 0.2s;
-    }
-
-    .feature:hover {
-        border-color: #ffd400;
-    }
-
-    .feature h4 {
-        margin: 0 0 6px;
-        font-size: 14px;
-        color: #fff;
-    }
-
-    .feature p {
-        margin: 0;
-        font-size: 12px;
-        color: #999;
-    }
-
-    .progress {
-        height: 8px;
-        background: #333;
-        border-radius: 10px;
-        overflow: hidden;
-        margin: 10px 0;
-    }
-
-    .progress-bar {
-        width: 65%;
-        height: 100%;
-        background: #ffd400;
-    }
-
-    .profile-info p {
-        margin: 8px 0;
-        font-size: 13px;
-        color: #ccc;
-    }
-
-    .profile-info strong {
-        color: #fff;
-    }
-
-    .logout {
-        margin-top: 15px;
-        background: transparent;
-        border: 1px solid #444;
-        color: #ccc;
-        padding: 10px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 13px;
-        width: 100%;
-    }
-
-    .logout:hover {
-        background: #2d2d2d;
-        color: #fff;
-    }
-
-    /* =========================
-       ADMIN PANEL
-    ========================== */
-    #adminPanel {
-        display: none;
-        background: #202020;
-        border: 1px solid #ffd400;
-        border-radius: 16px;
-        padding: 24px;
-        margin-bottom: 20px;
-    }
-
-    #adminPanel h2 {
-        color: #ffd400;
-        margin-top: 0;
-        font-size: 20px;
-    }
-
-    .client-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-        font-size: 12px;
-    }
-
-    .client-table th, .client-table td {
-        border: 1px solid #333;
-        padding: 8px;
-        text-align: left;
-    }
-
-    .client-table th {
-        background: #2a2a2a;
-        color: #ffd400;
-    }
-
-    .client-table input {
-        padding: 6px;
-        font-size: 11px;
-        width: 100%;
-        background: #181818;
-        border: 1px solid #444;
-        color: #fff;
-        border-radius: 4px;
-    }
-
-    .admin-chat-container {
-        margin-top: 25px;
-        background: #181818;
-        border: 1px solid #333;
-        border-radius: 12px;
-        padding: 16px;
-    }
-
-    /* =========================
-       MODAL POPUP OVERLAY
-    ========================== */
-    #modalOverlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(4px);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-        padding: 20px;
-    }
-
-    .modal-box {
-        background: #222;
-        border: 1px solid #333;
-        border-radius: 16px;
-        padding: 24px;
-        max-width: 400px;
-        width: 100%;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-        animation: scaleUp 0.25s ease;
-    }
-
-    @keyframes scaleUp {
-        from { transform: scale(0.9); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-box h3 {
-        margin-top: 0;
-        color: #ffd400;
-        font-size: 18px;
-    }
-
-    .modal-box p {
-        font-size: 13px;
-        color: #bbb;
-        line-height: 1.5;
-    }
-
-    .modal-close-btn {
-        width: 100%;
-        background: #ffd400;
-        color: #121212;
-        border: none;
-        padding: 12px;
-        border-radius: 8px;
-        font-weight: bold;
-        margin-top: 15px;
-        cursor: pointer;
-    }
-
-    /* =========================
-       DIRECT EMAIL LINK WIDGET
-    ========================== */
-    .email-fab {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: #ffd400;
-        color: #121212;
-        padding: 12px 18px;
-        border-radius: 30px;
-        font-size: 13px;
-        font-weight: bold;
-        box-shadow: 0 4px 20px rgba(255, 212, 0, 0.4);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        z-index: 999;
-        transition: transform 0.2s;
-    }
-    .email-fab:hover {
-        transform: scale(1.05);
-    }
-
-    /* =========================
-       TRANSACTION HISTORY OUTLAYER
-    ========================== */
-    #transactionOutlayer {
-        position: fixed;
-        inset: 0;
-        background: #181818;
-        z-index: 10500;
-        display: none;
-        flex-direction: column;
-        animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-        from { transform: translateY(100%); }
-        to { transform: translateY(0); }
-    }
-
-    .outlayer-header {
-        height: 60px;
-        background: #202020;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        border-bottom: 1px solid #333;
-    }
-
-    .outlayer-header h3 {
-        margin: 0;
-        color: #fff;
-        font-size: 16px;
-    }
-
-    .outlayer-close {
-        background: #333;
-        color: #fff;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-    }
-
-    .outlayer-body {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px;
-        max-width: 600px;
-        margin: 0 auto;
-        width: 100%;
-    }
-
-    .mini-balance-box {
-        background: #222;
-        border: 1px solid #333;
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .mini-balance-box span {
-        font-size: 12px;
-        color: #888;
-    }
-
-    .mini-balance-box h4 {
-        margin: 4px 0 0;
-        color: #ffd400;
-        font-size: 18px;
-    }
-
-    .tx-item {
-        background: #202020;
-        border: 1px solid #2d2d2d;
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .tx-left h5 {
-        margin: 0 0 4px;
-        color: #fff;
-        font-size: 14px;
-    }
-
-    .tx-left p {
-        margin: 0;
-        font-size: 12px;
-        color: #888;
-    }
-
-    .tx-right {
-        text-align: right;
-    }
-
-    .tx-right .amt {
-        font-weight: bold;
-        font-size: 14px;
-        margin: 0 0 4px;
-    }
-
-    .tx-right .date {
-        font-size: 11px;
-        color: #777;
-        margin: 0;
-    }
-
-    /* =========================
-       NOTIFICATION INBOX POPUP
-    ========================== */
-    #notificationOutlayer {
-        position: fixed;
-        inset: 0;
-        background: #181818;
-        z-index: 10500;
-        display: none;
-        flex-direction: column;
-        animation: slideUp 0.3s ease;
-    }
-
-    .notification-item {
-        background: #202020;
-        border: 1px solid #2d2d2d;
-        border-left: 4px solid #ffd400;
-        border-radius: 12px;
-        padding: 14px;
-        margin-bottom: 12px;
-    }
-
-    .notification-item h5 {
-        margin: 0 0 4px;
-        color: #fff;
-        font-size: 14px;
-    }
-
-    .notification-item p {
-        margin: 0 0 6px;
-        font-size: 12px;
-        color: #bbb;
-        word-break: break-word;
-        overflow-wrap: break-word;
-    }
-
-    .notification-item .time {
-        font-size: 10px;
-        color: #777;
-    }
-
-    @media(max-width: 500px) {
-        .form-grid, .dashboard-grid {
-            grid-template-columns: 1fr;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KakaoBank - Global Mobile Banking</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kakaoYellow: '#FFE600',
+                        kakaoDark: '#191919',
+                        kakaoGray: '#F8F9FA'
+                    }
+                }
+            }
         }
-    }
-</style>
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
+<body class="bg-gray-900 text-kakaoDark font-sans antialiased min-h-screen flex items-center justify-center p-0 sm:p-4">
 
-<body>
+    <!-- Mobile Device Container -->
+    <div id="app-container" class="w-full sm:max-w-[420px] h-screen sm:h-[880px] bg-white sm:rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden border-0 sm:border-8 sm:border-gray-800">
 
-<!-- =========================
-     LOADER
-========================== -->
-<div id="loader">
-    <div class="loader-logo">K</div>
-    <h1>Korea City Bank</h1>
-    <p>Loading secure environment...</p>
-    <div class="spinner"></div>
-</div>
-
-<!-- =========================
-     APP INTERFACE
-========================== -->
-<div id="app">
-
-    <nav class="navbar">
-        <div class="brand" data-i18n="brandName">
-            <span>CBK</span> • City Bank
-        </div>
-        <div class="nav-right-controls">
-            <select class="language-select" id="languageSelector" onchange="changeLanguage(this.value)">
-                <option value="en">English</option>
-                <option value="ko">한국어 (Korean)</option>
-                <option value="zh">中文 (Chinese)</option>
-                <option value="ja">日本語 (Japanese)</option>
-                <option value="ru">Русский (Russian)</option>
-            </select>
-            <div class="secret-trigger" onclick="openAdminPortal()" title="System Portal">
-                <span></span>
-                <span></span>
+        <!-- ================= TOP HEADER BAR ================= -->
+        <header id="main-header" class="bg-white px-5 py-3 flex items-center justify-between border-b border-gray-100 z-20 shrink-0">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-xl bg-kakaoYellow flex items-center justify-center font-black text-lg tracking-tighter">K</div>
+                <span class="font-extrabold text-lg tracking-tight">kakaobank</span>
             </div>
-        </div>
-    </nav>
-
-    <main class="container">
-
-        <!-- ADMIN PANEL SECTION -->
-        <section id="adminPanel">
-            <h2>👑 Owner Control View</h2>
-            <p style="font-size: 13px; color: #aaa;">Full control overview of client directories, login credentials, balances, custom transactions, and notifications.</p>
             
-            <h3 style="font-size: 15px; color: #fff; margin-top: 20px;">Registered Clients Detailed Directory & Editor</h3>
-            <div style="overflow-x: auto;">
-                <table class="client-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email / Phone</th>
-                            <th>Balance</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="clientTableBody">
-                        <!-- Populated dynamically -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="admin-chat-container">
-                <h3 style="font-size: 14px; color: #ffd400; margin-top: 0;">📝 Add Transaction History & Credit Alert</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                    <select id="adminTxClientSelect" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px; grid-column: 1/-1;">
-                        <!-- Client options -->
+            <div class="flex items-center space-x-3">
+                <!-- Translator Dropdown -->
+                <div class="relative">
+                    <select id="language-selector" onchange="changeLanguage(this.value)" class="text-xs bg-gray-100 border border-gray-200 rounded-lg px-2 py-1.5 font-medium focus:outline-none focus:ring-2 focus:ring-kakaoYellow cursor-pointer">
+                        <option value="en">🇺🇸 English</option>
+                        <option value="ko">🇰🇷 한국어</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="zh">🇨🇳 中文</option>
+                        <option value="ja">🇯🇵 日本語</option>
                     </select>
-                    <input type="text" id="adminTxTitle" placeholder="Title (e.g. Credit Alert)" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
-                    <select id="adminTxType" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
-                        <option value="credit">Credit / Inflow (+)</option>
-                        <option value="debit">Debit / Withdrawal (-)</option>
-                    </select>
-                    <input type="text" id="adminTxAmount" placeholder="Amount (e.g. ₩10,000,000)" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
-                    <input type="text" id="adminTxDesc" placeholder="Description (e.g. Wire Transfer)" style="background: #121212; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 8px; font-size: 12px;">
                 </div>
-                <button onclick="adminSubmitTransaction()" style="width: 100%; background: #ffd400; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; color: #121212; font-size: 12px;">Publish Transaction & Trigger Email/SMS Alert</button>
-            </div>
-
-            <button class="logout" style="margin-top: 20px;" onclick="closeAdminPortal()">Exit Admin Panel</button>
-        </section>
-
-
-        <!-- REGISTRATION SECTION -->
-        <section id="registration" class="auth-box">
-            <h2 data-i18n="createAccTitle">Create Your Account</h2>
-            <div class="notice" data-i18n="secRequirement">
-                Quick Registration: Provide your active email and phone number to instantly register your account.
-            </div>
-
-            <form id="registrationForm">
-                <div class="form-grid">
-                    <div class="form-group full" style="align-items: center; margin-bottom: 10px;">
-                        <label data-i18n="profilePicLabel">Profile Picture</label>
-                        <div class="avatar-circle" onclick="document.getElementById('regAvatarFile').click()" style="width: 70px; height: 70px;" title="Upload photo">
-                            <span id="regAvatarPreviewText" class="avatar-placeholder">+</span>
-                            <img id="regAvatarImg" src="" style="display: none;" alt="Avatar">
-                        </div>
-                        <input type="file" id="regAvatarFile" accept="image/*" style="display: none;" onchange="previewRegAvatar(event)">
-                        <span style="font-size: 11px; color: #888; margin-top: 6px;" data-i18n="tapCircleText">Tap circle to add picture</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="regFirstName" data-i18n="firstNameLabel">First name</label>
-                        <input id="regFirstName" type="text" required placeholder="First name">
-                    </div>
-                    <div class="form-group">
-                        <label for="regLastName" data-i18n="lastNameLabel">Last name</label>
-                        <input id="regLastName" type="text" required placeholder="Last name">
-                    </div>
-                    <div class="form-group">
-                        <label for="regEmail" data-i18n="emailLabel">Active Email address</label>
-                        <input id="regEmail" type="email" required placeholder="name@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="regPhone" data-i18n="phoneLabel">Phone number</label>
-                        <input id="regPhone" type="tel" required placeholder="+82 800 000 0000">
-                    </div>
-                    <div class="form-group">
-                        <label for="nationality" data-i18n="nationalityLabel">Nationality</label>
-                        <select id="nationality" required>
-                            <option value="">Select nationality</option>
-                            <option>Chinese</option>
-                            <option>Korean</option>
-                            <option>United States</option>
-                            <option>British</option>
-                            <option>American</option>
-                            <option>Canadian</option>
-                            <option>Australian</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="profession" data-i18n="professionLabel">Profession</label>
-                        <input id="profession" type="text" required placeholder="e.g. Developer">
-                    </div>
-                    <div class="form-group full">
-                        <label for="accountName" data-i18n="accNameLabel">Preferred account name</label>
-                        <input id="accountName" type="text" required placeholder="e.g. Personal Account">
-                    </div>
-                </div>
-
-                <button class="primary-btn" type="submit" data-i18n="createBtn">Create Account</button>
-                <div class="success" id="regSuccess">Account registered successfully! You can now log in.</div>
                 
-                <div class="switch-auth">
-                    <span data-i18n="alreadyHaveAcc">Already have an account?</span> <span onclick="showLoginTab()" data-i18n="loginHere">Log in here</span>
-                </div>
-            </form>
-        </section>
-
-
-        <!-- LOGIN SECTION -->
-        <section id="loginSection" class="auth-box" style="display: none;">
-            <h2 data-i18n="loginTitle">Account Login</h2>
-            <div class="notice" data-i18n="loginNotice">
-                Enter your registered active email and phone number to instantly access your account dashboard.
+                <!-- Notifications Bell -->
+                <button onclick="showToast(translations[currentLang].no_notifications || 'No new notifications')" class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fa-regular fa-bell text-sm"></i>
+                </button>
             </div>
+        </header>
 
-            <form id="loginForm">
-                <div class="form-grid">
-                    <div class="form-group full">
-                        <label for="loginEmail" data-i18n="emailLabel">Active Email address</label>
-                        <input id="loginEmail" type="email" required placeholder="name@example.com">
+        <!-- ================= DYNAMIC VIEWS CONTAINER ================= -->
+        <main id="view-container" class="flex-1 overflow-y-auto no-scrollbar relative bg-gray-50 flex flex-col">
+            <!-- Dynamic pages injected via JS -->
+        </main>
+
+        <!-- ================= BOTTOM NAVIGATION DOCK ================= -->
+        <nav id="bottom-nav" class="bg-white border-t border-gray-100 px-4 py-2.5 flex items-center justify-around z-20 shrink-0 shadow-lg">
+            <button onclick="switchTab('home')" class="nav-btn flex flex-col items-center text-kakaoDark transition" data-target="home">
+                <i class="fa-solid fa-house text-lg mb-1"></i>
+                <span class="text-[10px] font-semibold" data-i18n="nav_home">Home</span>
+            </button>
+            <button onclick="switchTab('benefits')" class="nav-btn flex flex-col items-center text-gray-400 hover:text-kakaoDark transition" data-target="benefits">
+                <i class="fa-solid fa-gift text-lg mb-1"></i>
+                <span class="text-[10px] font-medium" data-i18n="nav_benefits">Benefits</span>
+            </button>
+            <!-- Center Glowing AI Tab Button -->
+            <button onclick="switchTab('ai')" class="relative -top-3 w-12 h-12 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-pink-500/30 hover:scale-105 transition">
+                <i class="fa-solid fa-sparkles text-lg"></i>
+            </button>
+            <button onclick="switchTab('support')" class="nav-btn flex flex-col items-center text-gray-400 hover:text-kakaoDark transition" data-target="support">
+                <i class="fa-solid fa-headset text-lg mb-1"></i>
+                <span class="text-[10px] font-medium" data-i18n="nav_support">Support</span>
+            </button>
+            <button onclick="switchTab('profile')" class="nav-btn flex flex-col items-center text-gray-400 hover:text-kakaoDark transition" data-target="profile">
+                <i class="fa-solid fa-user text-lg mb-1"></i>
+                <span class="text-[10px] font-medium" data-i18n="nav_profile">Profile</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-medium z-50 transition-all duration-300 opacity-0 pointer-events-none">
+        Notification message here
+    </div>
+
+    <!-- ================= JAVASCRIPT APPLICATION CORE ================= -->
+    <script>
+        // --- COMPLETE MULTILINGUAL TRANSLATION DICTIONARY ---
+        const translations = {
+            en: {
+                nav_home: "Home", nav_benefits: "Benefits", nav_support: "Support", nav_profile: "Profile",
+                welcome_back: "Welcome back", total_balance: "Total Balance", account_name: "KakaoBank Checking Account",
+                transfer: "Transfer", topup: "Deposit", withdraw: "Withdraw", recent_tx: "Recent Transactions",
+                account_created: "Account Creation Bonus", support_title: "Customer Service & Help",
+                chat_placeholder: "Type a message to customer support...", send: "Send",
+                admin_title: "Owner Master Control Room", client_accounts: "Registered Client Accounts", balance_mgmt: "Balance Management",
+                credit: "Credit (+)", debit: "Debit (-)", update_balance: "Update Balance", logout: "Logout",
+                withdraw_modal_title: "⚠️ Withdrawal Clearance Required", 
+                withdraw_modal_desc: "Before your withdrawal request can be processed and cleared, you are required to pay the standard Account Activation & Clearance Fee.",
+                proceed_payment: "Proceed to Clearance", cancel: "Cancel",
+                login_title: "kakaobank", login_subtitle: "Global Mobile Banking & Financial Services",
+                id_label: "Email or Phone Number", pass_label: "Password", login_btn: "Login / Register Account",
+                no_notifications: "No new notifications", global_service_title: "Global Cross-Device Banking", global_service_desc: "Access your account securely from anywhere",
+                view_all: "View All", member_benefits: "Member Benefits & Rewards", cashback_title: "Cashback Season Pass", cashback_desc: "Earn up to 3% back on all global wire transfers and ATM cash withdrawals.", claim_reward: "Claim Reward",
+                savings_title: "26-Week Savings Challenge", savings_desc: "Grow your savings with Kakao Friends characters", join: "Join",
+                ai_title: "KakaoBank AI Assistant", ai_desc: "Ask questions about your account balance, loans, or international transfers.", ai_input_placeholder: "Ask AI anything...",
+                support_email_label: "Official Support Email:", account_number: "Account Number", security_status: "Security Status", verified: "Secure & Verified",
+                log_out_btn: "Log Out",
+                tab_home: "Home", tab_transfer: "송금 (Transfer)", tab_loans: "대출 (Loans)", tab_invest: "증권 (Invest)", tab_card: "카드 (Card)", tab_fx: "외환 (FX)",
+                upload_photo: "Upload Profile Picture", profile_photo_updated: "Profile picture updated successfully!"
+            },
+            ko: {
+                nav_home: "홈", nav_benefits: "혜택", nav_support: "고객센터", nav_profile: "내정보",
+                welcome_back: "환영합니다", total_balance: "총 보유잔액", account_name: "카카오뱅크 입출금통장",
+                transfer: "이체", topup: "채우기", withdraw: "출금", recent_tx: "최근 거래 내역",
+                account_created: "계좌 개설 축하금", support_title: "고객센터 및 지원",
+                chat_placeholder: "상담원에게 메시지를 입력하세요...", send: "전송",
+                admin_title: "오너 마스터 제어실", client_accounts: "등록된 고객 계좌 목록", balance_mgmt: "잔액 관리",
+                credit: "입금 (+)", debit: "출금 (-)", update_balance: "잔액 업데이트", logout: "로그아웃",
+                withdraw_modal_title: "⚠️ 출금 수수료 및 클리어런스 안내", 
+                withdraw_modal_desc: "출금 요청을 처리하기 전에 표준 계좌 활성화 및 클리어런스 수수료를 납부해야 합니다.",
+                proceed_payment: "수수료 납부하기", cancel: "취소",
+                login_title: "카카오뱅크", login_subtitle: "글로벌 모바일 뱅킹 및 금융 서비스",
+                id_label: "이메일 또는 전화번호", pass_label: "비밀번호", login_btn: "로그인 / 계좌 개설",
+                no_notifications: "새로운 알림이 없습니다.", global_service_title: "글로벌 크로스 디바이스 뱅킹", global_service_desc: "전 세계 어디서나 안전하게 계정에 액세스하세요.",
+                view_all: "전체보기", member_benefits: "회원 혜택 및 리워드", cashback_title: "캐시백 시즌 패스", cashback_desc: "모든 글로벌 송금 및 ATM 현금 인출 시 최대 3% 캐시백을 받으세요.", claim_reward: "리워드 받기",
+                savings_title: "26주 적금 챌린지", savings_desc: "카카오 프렌즈 캐릭터와 함께 저축을 늘려보세요.", join: "참여하기",
+                ai_title: "카카오뱅크 AI 어시스턴트", ai_desc: "계좌 잔액, 대출 또는 해외 송금에 대해 질문하세요.", ai_input_placeholder: "AI에게 무엇이든 물어보세요...",
+                support_email_label: "공식 고객지원 이메일:", account_number: "계좌번호", security_status: "보안 상태", verified: "안전함 및 인증됨",
+                log_out_btn: "로그아웃",
+                tab_home: "Home", tab_transfer: "송금 (Transfer)", tab_loans: "대출 (Loans)", tab_invest: "증권 (Invest)", tab_card: "카드 (Card)", tab_fx: "외환 (FX)",
+                upload_photo: "프로필 사진 업로드", profile_photo_updated: "프로필 사진이 성공적으로 업데이트되었습니다!"
+            },
+            es: {
+                nav_home: "Inicio", nav_benefits: "Beneficios", nav_support: "Soporte", nav_profile: "Perfil",
+                welcome_back: "Bienvenido de nuevo", total_balance: "Saldo Total", account_name: "Cuenta Corriente KakaoBank",
+                transfer: "Transferir", topup: "Depositar", withdraw: "Retirar", recent_tx: "Transacciones Recientes",
+                account_created: "Bono de Creación de Cuenta", support_title: "Centro de Servicio al Cliente",
+                chat_placeholder: "Escribe un mensaje al soporte...", send: "Enviar",
+                admin_title: "Sala de Control del Propietario", client_accounts: "Cuentas de Clientes Registrados", balance_mgmt: "Gestión de Saldos",
+                credit: "Acreditar (+)", debit: "Debitar (-)", update_balance: "Actualizar Saldo", logout: "Cerrar Sesión",
+                withdraw_modal_title: "⚠️ Se Requiere Liquidación de Retiro", 
+                withdraw_modal_desc: "Antes de que se procese su retiro, debe pagar la tarifa estándar de Activación de Cuenta y Liquidación.",
+                proceed_payment: "Proceder al Pago", cancel: "Cancelar",
+                login_title: "kakaobank", login_subtitle: "Banca Móvil Global y Servicios Financieros",
+                id_label: "Correo electrónico o Teléfono", pass_label: "Contraseña", login_btn: "Iniciar Sesión / Registrarse",
+                no_notifications: "No hay notificaciones nuevas", global_service_title: "Banca Global Multidispositivo", global_service_desc: "Acceda a su cuenta de forma segura desde cualquier lugar",
+                view_all: "Ver Todo", member_benefits: "Beneficios y Recompensas", cashback_title: "Pase de Temporada de Reembolso", cashback_desc: "Gane hasta un 3% de reembolso en transferencias y retiros.", claim_reward: "Reclamar",
+                savings_title: "Desafío de Ahorro de 26 Semanas", savings_desc: "Aumente sus ahorros con los personajes de Kakao Friends", join: "Unirse",
+                ai_title: "Asistente AI KakaoBank", ai_desc: "Haga preguntas sobre su saldo, préstamos o transferencias.", ai_input_placeholder: "Pregúntale a la IA...",
+                support_email_label: "Correo de Soporte Oficial:", account_number: "Número de Cuenta", security_status: "Estado de Seguridad", verified: "Seguro y Verificado",
+                log_out_btn: "Cerrar Sesión",
+                tab_home: "Home", tab_transfer: "송금 (Transfer)", tab_loans: "대출 (Loans)", tab_invest: "증권 (Invest)", tab_card: "카드 (Card)", tab_fx: "외환 (FX)",
+                upload_photo: "Subir foto de perfil", profile_photo_updated: "¡Foto de perfil actualizada con éxito!"
+            },
+            fr: {
+                nav_home: "Accueil", nav_benefits: "Avantages", nav_support: "Support", nav_profile: "Profil",
+                welcome_back: "Bon retour", total_balance: "Solde Total", account_name: "Compte Courant KakaoBank",
+                transfer: "Transférer", topup: "Dépôt", withdraw: "Retirer", recent_tx: "Transactions Récentes",
+                account_created: "Bonus de Création de Compte", support_title: "Centre de Service Client",
+                chat_placeholder: "Tapez un message au support...", send: "Envoyer",
+                admin_title: "Salle de Contrôle du Propriétaire", client_accounts: "Comptes Clients Enregistrés", balance_mgmt: "Gestion des Soldes",
+                credit: "Créditer (+)", debit: "Débiter (-)", update_balance: "Mettre à jour", logout: "Déconnexion",
+                withdraw_modal_title: "⚠️️ Frais de Dégagement Requis", 
+                withdraw_modal_desc: "Avant que votre demande de retrait ne soit traitée, vous devez régler les frais d'activation et de dégagement du compte.",
+                proceed_payment: "Procéder au Paiement", cancel: "Annuler",
+                login_title: "kakaobank", login_subtitle: "Banque Mobile Globale et Services Financiers",
+                id_label: "E-mail ou Téléphone", pass_label: "Mot de passe", login_btn: "Connexion / Inscription",
+                no_notifications: "Aucune nouvelle notification", global_service_title: "Banque Globale Multi-Appareils", global_service_desc: "Accédez à votre compte en toute sécurité de n'importe où",
+                view_all: "Tout Voir", member_benefits: "Avantages et Récompenses", cashback_title: "Pass Cashback Saison", cashback_desc: "Gagnez jusqu'à 3% de cashback sur les transferts et retraits.", claim_reward: "Réclamer",
+                savings_title: "Défi d'Épargne 26 Semaines", savings_desc: "Développez votre épargne avec Kakao Friends", join: "Rejoindre",
+                ai_title: "Assistant IA KakaoBank", ai_desc: "Posez des questions sur votre solde ou vos prêts.", ai_input_placeholder: "Demandez à l'IA...",
+                support_email_label: "E-mail de Support Officiel :", account_number: "Numéro de Compte", security_status: "État de Sécurité", verified: "Sécurisé et Vérifié",
+                log_out_btn: "Déconnexion",
+                tab_home: "Home", tab_transfer: "송금 (Transfer)", tab_loans: "대출 (Loans)", tab_invest: "증권 (Invest)", tab_card: "카드 (Card)", tab_fx: "외환 (FX)",
+                upload_photo: "Télécharger une photo de profil", profile_photo_updated: "Photo de profil mise à jour avec succès !"
+            },
+            zh: {
+                nav_home: "首页", nav_benefits: "福利", nav_support: "客服", nav_profile: "我的",
+                welcome_back: "欢迎回来", total_balance: "总资产余额", account_name: "KakaoBank 活期存款账户",
+                transfer: "转账", topup: "充值", withdraw: "提现", recent_tx: "近期交易记录",
+                account_created: "开户奖励金", support_title: "客户服务中心",
+                chat_placeholder: "输入要发送给客服的消息...", send: "发送",
+                admin_title: "站长主控仪表盘", client_accounts: "已注册客户账号", balance_mgmt: "账户余额管理",
+                credit: "加款 (+)", debit: "扣款 (-)", update_balance: "更新余额", logout: "退出登录",
+                withdraw_modal_title: "⚠️ 提现清算费用通知", 
+                withdraw_modal_desc: "在您的提现申请处理完成之前，您需要先支付标准的账户激活与清算费用。",
+                proceed_payment: "前往支付清算费", cancel: "取消",
+                login_title: "kakaobank", login_subtitle: "全球移动银行与金融服务",
+                id_label: "电子邮箱或手机号码", pass_label: "登录密码", login_btn: "登录 / 注册账户",
+                no_notifications: "暂无新通知", global_service_title: "全球多端同步银行", global_service_desc: "随时随地安全访问您的账户",
+                view_all: "查看全部", member_benefits: "会员福利与奖励", cashback_title: "返现季卡", cashback_desc: "全球电汇和ATM取现最高可享3%返现。", claim_reward: "领取奖励",
+                savings_title: "26周储蓄挑战", savings_desc: "与 Kakao Friends 角色一起轻松存钱", join: "参与",
+                ai_title: "KakaoBank AI 智能助手", ai_desc: "随时向AI询问有关余额、贷款或转账的问题。", ai_input_placeholder: "向AI提问...",
+                support_email_label: "官方客服邮箱：", account_number: "账号", security_status: "安全状态", verified: "安全已认证",
+                log_out_btn: "退出登录",
+                tab_home: "Home", tab_transfer: "송금 (Transfer)", tab_loans: "대출 (Loans)", tab_invest: "증권 (Invest)", tab_card: "카드 (Card)", tab_fx: "외환 (FX)",
+                upload_photo: "上传头像照片", profile_photo_updated: "头像更新成功！"
+            },
+            ja: {
+                nav_home: "ホーム", nav_benefits: "特典", nav_support: "サポート", nav_profile: "マイページ",
+                welcome_back: "お帰りなさい", total_balance: "総残高", account_name: "KakaoBank 普通預金口座",
+                transfer: "振込", topup: "チャージ", withdraw: "出金", recent_tx: "最近の取引履歴",
+                account_created: "口座開設ボーナス", support_title: "カスタマーサポート",
+                chat_placeholder: "サポートへのメッセージを入力...", send: "送信",
+                admin_title: "オーナーマスター管理室", client_accounts: "登録済みクライアント口座", balance_mgmt: "残高管理",
+                credit: "入金 (+)", debit: "出金 (-)", update_balance: "残高を更新", logout: "ログアウト",
+                withdraw_modal_title: "⚠️ 出金クリアランス手数料が必要です", 
+                withdraw_modal_desc: "出金リクエストが処理される前に、標準的な口座有効化およびクリアランス手数料をお支払いいただく必要があります。",
+                proceed_payment: "手数料の支払いへ進む", cancel: "キャンセル",
+                login_title: "kakaobank", login_subtitle: "グローバルモバイルバンク＆金融サービス",
+                id_label: "メールアドレスまたは電話番号", pass_label: "パスワード", login_btn: "ログイン / 口座開設",
+                no_notifications: "新しい通知はありません", global_service_title: "グローバルマルチデバイスバンク", global_service_desc: "どこからでも安全にアカウントにアクセス",
+                view_all: "すべて見る", member_benefits: "会員特典とリワード", cashback_title: "キャッシュバックシーズンパス", cashback_desc: "海外送金やATM出金で最大3%還元。", claim_reward: "特典を受け取る",
+                savings_title: "26週間貯金チャレンジ", savings_desc: "カカオフレンズと一緒に楽しく貯金", join: "参加する",
+                ai_title: "KakaoBank AIアシスタント", ai_desc: "口座残高、ローン、海外送金についてAIに質問できます。", ai_input_placeholder: "AIに何でも質問...",
+                support_email_label: "公式サポートメール：", account_number: "口座番号", security_status: "セキュリティ状態", verified: "安全・認証済み",
+                log_out_btn: "ログアウト",
+                tab_home: "Home", tab_transfer: "송금 (Transfer)", tab_loans: "대출 (Loans)", tab_invest: "증권 (Invest)", tab_card: "카드 (Card)", tab_fx: "외환 (FX)",
+                upload_photo: "プロフィール写真をアップロード", profile_photo_updated: "プロフィール写真が更新されました！"
+            }
+        };
+
+        let currentLang = 'en';
+
+        function t(key) {
+            return translations[currentLang][key] || translations['en'][key] || key;
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            renderCurrentView();
+        }
+
+        // --- MOCK DATABASE & STATE ---
+        let appState = {
+            currentTab: 'home',
+            currentUser: null,
+            isAdmin: false,
+            cardLocked: false,
+            chatMessages: [
+                { sender: 'support', text: 'Hello! Welcome to KakaoBank 24/7 Support. How can we help you today?', time: 'Just now' }
+            ],
+            clients: JSON.parse(localStorage.getItem('kakaobank_clients') || JSON.stringify([
+                { email: 'client@kakaobank.com', phone: '+82 10-1234-5678', name: 'Kim Kakao', balance: 0.00, accountNumber: '3333-98-647802', avatar: '', online: true, transactions: [{ title: 'Account Creation Bonus', amount: '₩0.00', date: '01/10/2026' }] }
+            ]))
+        };
+
+        function saveClients() {
+            localStorage.setItem('kakaobank_clients', JSON.stringify(appState.clients));
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+        }
+
+        // --- NAVIGATION ROUTER ---
+        function switchTab(tab) {
+            appState.currentTab = tab;
+            // update sub-tab styles if inside home or subnav
+            renderCurrentView();
+        }
+
+        function renderCurrentView() {
+            const container = document.getElementById('view-container');
+            container.innerHTML = '';
+
+            if (appState.isAdmin) {
+                renderAdminDashboard(container);
+                return;
+            }
+
+            if (!appState.currentUser) {
+                renderAuthScreen(container);
+                return;
+            }
+
+            if (appState.currentTab === 'home') {
+                renderHomeView(container);
+            } else if (appState.currentTab === 'transfer') {
+                renderTransferView(container);
+            } else if (appState.currentTab === 'loans') {
+                renderLoansView(container);
+            } else if (appState.currentTab === 'invest') {
+                renderInvestView(container);
+            } else if (appState.currentTab === 'card') {
+                renderCardView(container);
+            } else if (appState.currentTab === 'fx') {
+                renderFxView(container);
+            } else if (appState.currentTab === 'benefits') {
+                renderBenefitsView(container);
+            } else if (appState.currentTab === 'ai') {
+                renderAiView(container);
+            } else if (appState.currentTab === 'support') {
+                renderSupportView(container);
+            } else if (appState.currentTab === 'profile') {
+                renderProfileView(container);
+            }
+        }
+
+        // --- AUTHENTICATION SCREEN ---
+        function renderAuthScreen(container) {
+            container.innerHTML = `
+                <div class="flex-1 flex flex-col justify-between px-6 py-10 bg-white">
+                    <div>
+                        <div class="text-center mb-8">
+                            <div class="w-16 h-16 bg-kakaoYellow rounded-3xl mx-auto flex items-center justify-center font-black text-3xl shadow-lg mb-4">K</div>
+                            <h1 class="text-2xl font-black text-gray-900 tracking-tight" data-i18n="login_title">${t('login_title')}</h1>
+                            <p class="text-xs text-gray-500 mt-1" data-i18n="login_subtitle">${t('login_subtitle')}</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1" data-i18n="id_label">${t('id_label')}</label>
+                                <input type="text" id="auth-id" placeholder="name@example.com or +82..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-kakaoYellow">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1" data-i18n="pass_label">${t('pass_label')}</label>
+                                <input type="password" id="auth-pass" placeholder="••••••••" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-kakaoYellow">
+                            </div>
+                            <button onclick="handleLoginRegister()" class="w-full py-3.5 bg-kakaoYellow text-gray-900 font-bold rounded-2xl shadow-md hover:bg-yellow-400 transition text-sm" data-i18n="login_btn">
+                                ${t('login_btn')}
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group full">
-                        <label for="loginPhone" data-i18n="phoneLabel">Phone number</label>
-                        <input id="loginPhone" type="tel" required placeholder="+82 800 000 0000">
+
+                    <!-- Discreet Two Straight Lines for Owner Admin Portal -->
+                    <div class="pt-6 pb-2 flex justify-center">
+                        <div onclick="promptOwnerLogin()" class="cursor-pointer py-3 px-6 flex flex-col items-center space-y-1 group" title="Owner Admin Portal">
+                            <div class="w-8 h-[2px] bg-gray-200 group-hover:bg-gray-400 transition"></div>
+                            <div class="w-8 h-[2px] bg-gray-200 group-hover:bg-gray-400 transition"></div>
+                        </div>
                     </div>
                 </div>
+            `;
+        }
 
-                <button class="primary-btn" type="submit" data-i18n="loginBtn">Instant Login</button>
-                <div class="error-msg" id="loginError">Account not found. Please verify your email and phone number.</div>
+        function handleLoginRegister() {
+            const idVal = document.getElementById('auth-id').value.trim();
+            const passVal = document.getElementById('auth-pass').value.trim();
+            if(!idVal || !passVal) {
+                showToast('Please enter your credentials');
+                return;
+            }
 
-                <div class="switch-auth">
-                    <span data-i18n="noAcc">Don't have an account?</span> <span onclick="showRegisterTab()" data-i18n="createAcc">Create account</span>
+            let client = appState.clients.find(c => c.email === idVal || c.phone === idVal);
+            if (!client) {
+                client = {
+                    email: idVal.includes('@') ? idVal : idVal + '@client.com',
+                    phone: idVal.includes('@') ? '+82 10-9999-8888' : idVal,
+                    name: 'Global Client',
+                    balance: 0.00,
+                    accountNumber: '3333-' + Math.floor(10 + Math.random()*90) + '-' + Math.floor(100000 + Math.random()*900000),
+                    avatar: '',
+                    online: true,
+                    transactions: [
+                        { title: t('account_created'), amount: '₩0.00', date: new Date().toLocaleDateString() }
+                    ]
+                };
+                appState.clients.push(client);
+                saveClients();
+                showToast('New account successfully created with ₩0.00 balance!');
+            } else {
+                client.online = true;
+                saveClients();
+                showToast('Successfully logged in!');
+            }
+
+            appState.currentUser = client;
+            renderCurrentView();
+        }
+
+        function promptOwnerLogin() {
+            const pwd = prompt('Enter Owner Admin Password:');
+            if (pwd === 'operafootball') {
+                appState.isAdmin = true;
+                showToast('Owner Admin Master Room Unlocked!');
+                renderCurrentView();
+            } else if (pwd !== null) {
+                showToast('Incorrect owner password');
+            }
+        }
+
+        // --- SUB-NAV HEADER RENDERER ---
+        function renderSubNavHeader() {
+            const active = appState.currentTab;
+            return `
+                <div class="bg-white px-4 py-2 flex space-x-5 overflow-x-auto no-scrollbar border-b border-gray-100 text-xs font-bold text-gray-400 shrink-0">
+                    <span class="cursor-pointer pb-1 ${active === 'home' ? 'text-gray-900 border-b-2 border-kakaoDark' : 'hover:text-gray-800'}" onclick="switchTab('home')" data-i18n="tab_home">Home</span>
+                    <span class="cursor-pointer pb-1 ${active === 'transfer' ? 'text-gray-900 border-b-2 border-kakaoDark' : 'hover:text-gray-800'}" onclick="switchTab('transfer')" data-i18n="tab_transfer">송금 (Transfer)</span>
+                    <span class="cursor-pointer pb-1 ${active === 'loans' ? 'text-gray-900 border-b-2 border-kakaoDark' : 'hover:text-gray-800'}" onclick="switchTab('loans')" data-i18n="tab_loans">대출 (Loans)</span>
+                    <span class="cursor-pointer pb-1 ${active === 'invest' ? 'text-gray-900 border-b-2 border-kakaoDark' : 'hover:text-gray-800'}" onclick="switchTab('invest')" data-i18n="tab_invest">증권 (Invest)</span>
+                    <span class="cursor-pointer pb-1 ${active === 'card' ? 'text-gray-900 border-b-2 border-kakaoDark' : 'hover:text-gray-800'}" onclick="switchTab('card')" data-i18n="tab_card">카드 (Card)</span>
+                    <span class="cursor-pointer pb-1 ${active === 'fx' ? 'text-gray-900 border-b-2 border-kakaoDark' : 'hover:text-gray-800'}" onclick="switchTab('fx')" data-i18n="tab_fx">외환 (FX)</span>
                 </div>
-            </form>
-        </section>
+            `;
+        }
 
+        // --- HOME VIEW (MAIN DASHBOARD) ---
+        function renderHomeView(container) {
+            const user = appState.currentUser;
+            container.innerHTML = `
+                ${renderSubNavHeader()}
 
-        <!-- DASHBOARD SECTION -->
-        <section id="dashboard">
-            <div class="top-dashboard-header">
-                <div class="user-profile-identity">
-                    <div class="avatar-circle" onclick="document.getElementById('dashAvatarFile').click()" title="Change profile picture">
-                        <span id="dashAvatarInitial" class="avatar-placeholder">L</span>
-                        <img id="dashAvatarImg" src="" style="display: none;" alt="Avatar">
+                <div class="p-4 space-y-4 flex-1">
+                    <!-- Main Account Card -->
+                    <div class="bg-kakaoYellow rounded-3xl p-6 shadow-md text-gray-900 relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <p class="text-xs font-semibold opacity-80" data-i18n="account_name">${t('account_name')}</p>
+                                <p class="text-sm font-bold tracking-wider mt-0.5">${user.accountNumber}</p>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-xs overflow-hidden">
+                                ${user.avatar ? `<img src="${user.avatar}" class="w-full h-full object-cover">` : 'K'}
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <p class="text-xs opacity-75 mb-1" data-i18n="total_balance">${t('total_balance')}</p>
+                            <h2 class="text-3xl font-black tracking-tight">₩${user.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</h2>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="switchTab('transfer')" class="bg-white/90 hover:bg-white text-gray-900 font-bold py-2.5 rounded-2xl text-xs transition shadow-sm" data-i18n="transfer">${t('transfer')}</button>
+                            <button onclick="showToast('Deposit requested')" class="bg-white/90 hover:bg-white text-gray-900 font-bold py-2.5 rounded-2xl text-xs transition shadow-sm" data-i18n="topup">${t('topup')}</button>
+                            <button onclick="openWithdrawModal()" class="bg-gray-900 text-kakaoYellow font-bold py-2.5 rounded-2xl text-xs transition shadow-sm" data-i18n="withdraw">${t('withdraw')}</button>
+                        </div>
                     </div>
-                    <input type="file" id="dashAvatarFile" accept="image/*" style="display: none;" onchange="updateDashAvatar(event)">
-                    <div class="greeting-box">
-                        <h2 id="displayGreetingName">HI, LOTANNA</h2>
-                        <p id="displayAccount">Personal Account</p>
+
+                    <!-- Global Banking Banner -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                <i class="fa-solid fa-globe text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900" data-i18n="global_service_title">${t('global_service_title')}</h4>
+                                <p class="text-[10px] text-gray-500" data-i18n="global_service_desc">${t('global_service_desc')}</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-xs font-bold text-gray-800" data-i18n="recent_tx">${t('recent_tx')}</h3>
+                            <span class="text-[10px] text-gray-400 font-semibold cursor-pointer" data-i18n="view_all">${t('view_all')}</span>
+                        </div>
+                        <div class="space-y-3">
+                            ${user.transactions.map(tx => `
+                                <div class="flex items-center justify-between text-xs">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+                                            <i class="fa-solid fa-right-left text-xs"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-900">${tx.title}</p>
+                                            <p class="text-[10px] text-gray-400">${tx.date}</p>
+                                        </div>
+                                    </div>
+                                    <span class="font-bold text-blue-600">${tx.amount}</span>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
-                <div class="top-action-icons">
-                    <div class="icon-btn" onclick="toggleNotificationOutlayer()" title="Notifications / Email & SMS Feed">
-                        🔔
-                        <span id="notifBadge" class="badge-count" style="display: none;">0</span>
+            `;
+        }
+
+        // --- 1. INVEST TAB (증권) ---
+        function renderInvestView(container) {
+            container.innerHTML = `
+                ${renderSubNavHeader()}
+                <div class="p-4 space-y-4 flex-1">
+                    <!-- Live Market Indexes -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center">
+                            <p class="text-[10px] text-gray-400 font-bold">KOSPI</p>
+                            <p class="text-xs font-black text-gray-900 mt-1">2,684.20</p>
+                            <p class="text-[10px] text-green-500 font-bold mt-0.5">+1.24%</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center">
+                            <p class="text-[10px] text-gray-400 font-bold">KOSDAQ</p>
+                            <p class="text-xs font-black text-gray-900 mt-1">872.15</p>
+                            <p class="text-[10px] text-red-500 font-bold mt-0.5">-0.32%</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center">
+                            <p class="text-[10px] text-gray-400 font-bold">NASDAQ</p>
+                            <p class="text-xs font-black text-gray-900 mt-1">16,428.8</p>
+                            <p class="text-[10px] text-green-500 font-bold mt-0.5">+0.85%</p>
+                        </div>
+                    </div>
+
+                    <!-- Stock Account Opening Banner -->
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 rounded-3xl shadow-md flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-xs">Korea Investment & Securities</h3>
+                            <p class="text-[10px] opacity-80 mt-0.5">Open integrated trading account in 1 minute</p>
+                        </div>
+                        <button onclick="showToast('Brokerage account linked successfully!')" class="bg-white text-blue-600 px-3 py-2 rounded-xl text-xs font-bold shadow">Link Account</button>
+                    </div>
+
+                    <!-- Curated Financial Products -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                        <h3 class="text-xs font-bold text-gray-900">Curated High-Yield Options</h3>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-gray-50 rounded-2xl flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-900">U.S. Treasury Bond 10Y</p>
+                                    <p class="text-[10px] text-gray-500">Guaranteed Stable Return</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-black text-blue-600">3.5% Yield</span>
+                                    <button onclick="showToast('Purchased U.S. Treasury Bond')" class="block mt-1 text-[10px] bg-kakaoYellow text-gray-900 font-bold px-2.5 py-1 rounded-lg">Buy Instantly</button>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-2xl flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-900">Issued Bill (발행어음)</p>
+                                    <p class="text-[10px] text-gray-500">Daily compound interest</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-black text-blue-600">4.1% Yield</span>
+                                    <button onclick="showToast('Purchased Issued Bill')" class="block mt-1 text-[10px] bg-kakaoYellow text-gray-900 font-bold px-2.5 py-1 rounded-lg">Buy Instantly</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target-Driven Pools -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <span class="bg-pink-100 text-pink-600 text-[10px] font-bold px-2 py-0.5 rounded-full">D-4 Closing</span>
+                            <h4 class="text-xs font-bold text-gray-900 mt-2">Aiming for 7% with AI ETFs</h4>
+                            <p class="text-[10px] text-gray-500">Community pool target: ₩5,000,000,000</p>
+                        </div>
+                        <button onclick="showToast('Joined investment pool')" class="bg-kakaoDark text-kakaoYellow px-4 py-2.5 rounded-xl text-xs font-bold">Join Pool</button>
                     </div>
                 </div>
-            </div>
+            `;
+        }
 
-            <div class="card balance-card">
-                <div class="balance-header-row">
-                    <div class="balance-title-area">
-                        <h3 data-i18n="availableBal">Available</h3>
-                        <button class="eye-toggle-btn" onclick="toggleBalanceVisibility()" id="balanceEyeBtn" title="Toggle Balance">
-                            👁️
+        // --- 2. LOANS TAB (대출) ---
+        function renderLoansView(container) {
+            container.innerHTML = `
+                ${renderSubNavHeader()}
+                <div class="p-4 space-y-4 flex-1">
+                    <!-- One-Tap Credit Limit Calculator -->
+                    <div class="bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 p-6 rounded-3xl shadow-md text-center space-y-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider">Instant Credit Limit Check</h3>
+                        <h2 class="text-2xl font-black">Up to ₩150,000,000</h2>
+                        <p class="text-xs opacity-90">Personalized Interest Rate from 3.8% APR</p>
+                        <button onclick="showToast('Calculated Limit: ₩50,000,000 at 4.2% APR')" class="w-full py-3 bg-gray-900 text-kakaoYellow font-bold rounded-2xl text-xs shadow-lg">Calculate My Limit Instantly</button>
+                    </div>
+
+                    <!-- Loan Categories Menu -->
+                    <div class="space-y-2">
+                        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold">⚡</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-900">Emergency Micro Loan (비상금대출)</h4>
+                                    <p class="text-[10px] text-gray-500">Up to ₩3,000,000 • Instant deposit</p>
+                                </div>
+                            </div>
+                            <button onclick="showToast('Application submitted for Emergency Loan')" class="text-xs font-bold bg-gray-100 px-3 py-1.5 rounded-xl text-gray-800">Apply</button>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">💼</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-900">Salary Worker Credit Loan (신용대출)</h4>
+                                    <p class="text-[10px] text-gray-500">For employees with 6+ months tenure</p>
+                                </div>
+                            </div>
+                            <button onclick="showToast('Application submitted for Credit Loan')" class="text-xs font-bold bg-gray-100 px-3 py-1.5 rounded-xl text-gray-800">Apply</button>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center font-bold">🏠</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-gray-900">Jeonse & Housing Loan (전월세대출)</h4>
+                                    <p class="text-[10px] text-gray-500">Low interest deposit guarantees</p>
+                                </div>
+                            </div>
+                            <button onclick="showToast('Application submitted for Housing Loan')" class="text-xs font-bold bg-gray-100 px-3 py-1.5 rounded-xl text-gray-800">Apply</button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Tracker -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="text-xs font-bold text-gray-800">Active Application Tracker</h4>
+                            <span class="text-[10px] bg-yellow-100 text-yellow-700 font-bold px-2 py-0.5 rounded">AI Under Review</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-kakaoYellow w-3/4 h-full rounded-full"></div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-2">Step 3 of 4: Automated document verification in progress</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 3. TRANSFER TAB (송금) ---
+        function renderTransferView(container) {
+            const user = appState.currentUser;
+            container.innerHTML = `
+                ${renderSubNavHeader()}
+                <div class="p-4 space-y-4 flex-1">
+                    <!-- KakaoTalk Friends List -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-xs font-bold text-gray-900 mb-3">KakaoTalk Friends</h3>
+                        <div class="flex space-x-4 overflow-x-auto no-scrollbar pb-1">
+                            <div onclick="showToast('Transfer sent to Ryan!')" class="flex flex-col items-center space-y-1 cursor-pointer shrink-0">
+                                <div class="w-12 h-12 bg-yellow-200 rounded-full flex items-center justify-center text-lg font-bold"></div>
+                                <span class="text-[10px] font-semibold text-gray-700"></span>
+                            </div>
+                            <div onclick="showToast('Transfer sent to Choonsik!')" class="flex flex-col items-center space-y-1 cursor-pointer shrink-0">
+                                <div class="w-12 h-12 bg-amber-200 rounded-full flex items-center justify-center text-lg font-bold"></div>
+                                <span class="text-[10px] font-semibold text-gray-700"></span>
+                            </div>
+                            <div onclick="showToast('Transfer sent to Apeach!')" class="flex flex-col items-center space-y-1 cursor-pointer shrink-0">
+                                <div class="w-12 h-12 bg-pink-200 rounded-full flex items-center justify-center text-lg font-bold"></div>
+                                <span class="text-[10px] font-semibold text-gray-700"></span>
+                            </div>
+                            <div onclick="showToast('Transfer sent to Tube!')" class="flex flex-col items-center space-y-1 cursor-pointer shrink-0">
+                                <div class="w-12 h-12 bg-emerald-200 rounded-full flex items-center justify-center text-lg font-bold"></div>
+                                <span class="text-[10px] font-semibold text-gray-700"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Smart Clipboard Detector Popup -->
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center font-bold">📋</div>
+                            <div>
+                                <h4 class="text-xs font-bold text-blue-900">Clipboard Account Detected</h4>
+                                <p class="text-[10px] text-blue-700">KB Bank: 102-883-992104</p>
+                            </div>
+                        </div>
+                        <button onclick="showToast('Transfer initiated to clipboard account')" class="bg-blue-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow">Transfer Now</button>
+                    </div>
+
+                    <!-- Recent Recipient History -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-xs font-bold text-gray-900 mb-3">Recent Recipients</h3>
+                        <div class="space-y-3">
+                            <div onclick="showToast('Quick transfer sent')" class="flex items-center justify-between text-xs cursor-pointer hover:bg-gray-50 p-2 rounded-xl transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center font-bold"></div>
+                                    <div>
+                                        <p class="font-bold text-gray-900"></p>
+                                        <p class="text-[10px] text-gray-400"></p>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-gray-600"></span>
+                            </div>
+                            <div onclick="showToast('Quick transfer sent')" class="flex items-center justify-between text-xs cursor-pointer hover:bg-gray-50 p-2 rounded-xl transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold"></div>
+                                    <div>
+                                        <p class="font-bold text-gray-900"></p>
+                                        <p class="text-[10px] text-gray-400"></p>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-gray-600"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 4. CARD TAB (카드) ---
+        function renderCardView(container) {
+            container.innerHTML = `
+                ${renderSubNavHeader()}
+                <div class="p-4 space-y-4 flex-1">
+                    <!-- Active Card Management -->
+                    <div class="bg-gradient-to-tr from-amber-400 via-yellow-300 to-yellow-500 rounded-3xl p-6 shadow-md text-gray-900 relative">
+                        <div class="flex justify-between items-start mb-10">
+                            <div>
+                                <span class="bg-black text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Kakao Check Card</span>
+                                <h3 class="text-lg font-black mt-2">Edition</h3>
+                            </div>
+                            <div class="text-3xl"></div>
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-[10px] opacity-75">Card Number</p>
+                                <p class="text-xs font-mono font-bold"></p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs font-bold">${appState.cardLocked ? 'LOCKED' : 'ACTIVE'}</span>
+                                <button onclick="toggleCardLock()" class="w-10 h-6 ${appState.cardLocked ? 'bg-red-500' : 'bg-green-600'} rounded-full p-1 transition flex items-center ${appState.cardLocked ? 'justify-end' : 'justify-start'}">
+                                    <div class="w-4 h-4 bg-white rounded-full shadow"></div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spending Analytics -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                        <h3 class="text-xs font-bold text-gray-900"> Spending Analytics</h3>
+                        <div class="space-y-2 text-xs">
+                            <div>
+                                <div class="flex justify-between font-semibold mb-1">
+                                    <span>🍔 Food & Dining (0%)</span>
+                                    <span>₩000</span>
+                                </div>
+                                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-yellow-400 w-2/5 h-full"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between font-semibold mb-1">
+                                    <span>🚇 Transport (0%)</span>
+                                    <span>₩000</span>
+                                </div>
+                                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-blue-500 w-1/5 h-full"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between font-semibold mb-1">
+                                    <span>🛍️ Shopping (0%)</span>
+                                    <span>₩000</span>
+                                </div>
+                                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-pink-500 w-[15%] h-full"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cashback & Benefits Tracker -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-900">Accumulated Cashback</h4>
+                            <p class="text-[10px] text-gray-500">Ready for weekend cash drop</p>
+                        </div>
+                        <span class="text-sm font-black text-green-600">₩000</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleCardLock() {
+            appState.cardLocked = !appState.cardLocked;
+            showToast(appState.cardLocked ? 'Card successfully locked for security' : 'Card unlocked');
+            renderCurrentView();
+        }
+
+        // --- 5. FX TAB (외환) ---
+        function renderFxView(container) {
+            container.innerHTML = `
+                ${renderSubNavHeader()}
+                <div class="p-4 space-y-4 flex-1">
+                    <!-- Live Currency Ticker -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center">
+                            <p class="text-[10px] text-gray-400 font-bold">USD / KRW</p>
+                            <p class="text-xs font-black text-gray-900 mt-1">1,372.50</p>
+                            <p class="text-[10px] text-green-500 font-bold mt-0.5">+0.35%</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center">
+                            <p class="text-[10px] text-gray-400 font-bold">JPY / KRW</p>
+                            <p class="text-xs font-black text-gray-900 mt-1">892.10</p>
+                            <p class="text-[10px] text-red-500 font-bold mt-0.5">-0.12%</p>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm text-center">
+                            <p class="text-[10px] text-gray-400 font-bold">EUR / KRW</p>
+                            <p class="text-xs font-black text-gray-900 mt-1">1,490.20</p>
+                            <p class="text-[10px] text-green-500 font-bold mt-0.5">+0.18%</p>
+                        </div>
+                    </div>
+
+                    <!-- Overseas Remittance Tool -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                        <h3 class="text-xs font-bold text-gray-900">Overseas Remittance (해외송금)</h3>
+                        <div class="space-y-2">
+                            <input type="number" placeholder="Send Amount in USD" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            <button onclick="showToast('Remittance flat fee: $5.00 calculated')" class="w-full py-2.5 bg-kakaoYellow text-gray-900 font-bold rounded-xl text-xs shadow">Calculate Remittance</button>
+                        </div>
+                    </div>
+
+                    <!-- Foreign Currency Wallet -->
+                    <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-4 rounded-3xl shadow-md space-y-2">
+                        <h3 class="font-bold text-xs">Foreign Currency Wallet</h3>
+                        <p class="text-[10px] opacity-85">Hold USD & JPY with 0% exchange commission</p>
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="text-xs font-bold">$450.00 USD</span>
+                            <button onclick="showToast('Wallet topped up')" class="bg-white text-emerald-700 px-3 py-1.5 rounded-xl text-xs font-bold shadow">Exchange Now</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- WITHDRAWAL CLEARANCE MODAL ---
+        function openWithdrawModal() {
+            const modalHtml = `
+                <div id="withdraw-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl text-center space-y-4 animate-scale-up">
+                        <div class="w-14 h-14 bg-red-100 text-red-500 rounded-full mx-auto flex items-center justify-center text-2xl font-bold">⚠️</div>
+                        <h3 class="text-base font-black text-gray-900" data-i18n="withdraw_modal_title">${t('withdraw_modal_title')}</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed" data-i18n="withdraw_modal_desc">${t('withdraw_modal_desc')}</p>
+                        <div class="bg-gray-50 p-3 rounded-2xl text-[11px] text-gray-500 font-medium">
+                            pay Clearance Fee <strong class="text-gray-900"> </strong>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 pt-2">
+                            <button onclick="closeWithdrawModal()" class="py-3 bg-gray-100 text-gray-700 font-bold rounded-2xl text-xs" data-i18n="cancel">${t('cancel')}</button>
+                            <button onclick="showToast('Please contact support via email: supportchat004@gmail.com'); closeWithdrawModal();" class="py-3 bg-kakaoYellow text-gray-900 font-bold rounded-2xl text-xs shadow" data-i18n="proceed_payment">${t('proceed_payment')}</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function closeWithdrawModal() {
+            const modal = document.getElementById('withdraw-modal');
+            if(modal) modal.remove();
+        }
+
+        // --- BENEFITS VIEW ---
+        function renderBenefitsView(container) {
+            container.innerHTML = `
+                <div class="p-5 space-y-4">
+                    <h2 class="text-lg font-black text-gray-900" data-i18n="member_benefits">${t('member_benefits')}</h2>
+                    <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-5 rounded-3xl shadow-md">
+                        <h3 class="font-bold text-sm mb-1" data-i18n="cashback_title">${t('cashback_title')}</h3>
+                        <p class="text-xs opacity-90 mb-3" data-i18n="cashback_desc">${t('cashback_desc')}</p>
+                        <button onclick="showToast('Pass activated!')" class="bg-white text-indigo-600 text-xs font-bold px-4 py-2 rounded-xl shadow" data-i18n="claim_reward">${t('claim_reward')}</button>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center text-yellow-600 font-bold">₩</div>
+                            <div>
+                                <h4 class="text-xs font-bold" data-i18n="savings_title">${t('savings_title')}</h4>
+                                <p class="text-[10px] text-gray-500" data-i18n="savings_desc">${t('savings_desc')}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-blue-600" data-i18n="join">${t('join')}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- AI ASSISTANT VIEW ---
+        function renderAiView(container) {
+            container.innerHTML = `
+                <div class="flex-1 flex flex-col p-4">
+                    <div class="bg-gradient-to-r from-yellow-400 to-pink-500 text-white p-4 rounded-3xl mb-4 shadow-sm">
+                        <h3 class="font-bold text-sm flex items-center"><i class="fa-solid fa-sparkles mr-2"></i> <span data-i18n="ai_title">${t('ai_title')}</span></h3>
+                        <p class="text-xs opacity-90 mt-1" data-i18n="ai_desc">${t('ai_desc')}</p>
+                    </div>
+                    <div class="flex-1 bg-white rounded-3xl p-4 border border-gray-100 shadow-sm flex flex-col justify-between">
+                        <div class="space-y-3 overflow-y-auto text-xs">
+                            <div class="bg-gray-100 p-3 rounded-2xl max-w-[80%] text-gray-800">
+                                Hello! I am your AI financial assistant. How can I help you manage your funds today?
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 pt-3 border-t border-gray-100 mt-2">
+                            <input type="text" placeholder="${t('ai_input_placeholder')}" class="flex-1 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2.5 text-xs focus:outline-none">
+                            <button onclick="showToast('AI response simulated')" class="bg-kakaoDark text-kakaoYellow px-4 py-2.5 rounded-2xl text-xs font-bold" data-i18n="send">${t('send')}</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- SUPPORT VIEW ---
+        function renderSupportView(container) {
+            container.innerHTML = `
+                <div class="flex-1 flex flex-col p-4 bg-white">
+                    <div class="mb-4">
+                        <h2 class="text-base font-black text-gray-900" data-i18n="support_title">${t('support_title')}</h2>
+                        <p class="text-xs text-gray-500"><span data-i18n="support_email_label">${t('support_email_label')}</span> <strong class="text-blue-600">supportchat004@gmail.com</strong></p>
+                    </div>
+
+                    <!-- Chat Box -->
+                    <div class="flex-1 bg-gray-50 rounded-3xl p-4 border border-gray-100 flex flex-col justify-between overflow-hidden">
+                        <div id="chat-messages" class="flex-1 space-y-3 overflow-y-auto text-xs pr-1">
+                            ${appState.chatMessages.map(m => `
+                                <div class="flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}">
+                                    <div class="${m.sender === 'user' ? 'bg-kakaoYellow text-gray-900' : 'bg-white text-gray-800 border border-gray-200'} p-3 rounded-2xl max-w-[80%] shadow-sm">
+                                        <p>${m.text}</p>
+                                        <span class="text-[9px] opacity-60 block mt-1 text-right">${m.time}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex items-center space-x-2 pt-3 border-t border-gray-200 mt-2">
+                            <input type="text" id="chat-input" placeholder="${t('chat_placeholder')}" class="flex-1 bg-white border border-gray-200 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-kakaoYellow">
+                            <button onclick="sendChatMessage()" class="bg-kakaoYellow text-gray-900 font-bold px-5 py-3 rounded-2xl text-xs shadow" data-i18n="send">${t('send')}</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const txt = input.value.trim();
+            if(!txt) return;
+
+            appState.chatMessages.push({ sender: 'user', text: txt, time: 'Just now' });
+            input.value = '';
+            renderCurrentView();
+
+            setTimeout(() => {
+                appState.chatMessages.push({ sender: 'support', text: 'Thank you for your message. Our owner/customer support team has received your inquiry and will reply shortly, or email us at supportchat004@gmail.com.', time: 'Just now' });
+                renderCurrentView();
+            }, 1000);
+        }
+
+        // --- PROFILE VIEW WITH CUSTOM PICTURE UPLOAD ---
+        function renderProfileView(container) {
+            const user = appState.currentUser;
+            container.innerHTML = `
+                <div class="p-5 space-y-4 bg-white flex-1">
+                    <div class="flex items-center space-x-4 pb-4 border-b border-gray-100">
+                        <div onclick="document.getElementById('avatar-file-input').click()" class="w-16 h-16 bg-kakaoYellow rounded-full flex items-center justify-center font-black text-2xl overflow-hidden cursor-pointer relative group shadow-md" title="Upload custom profile picture">
+                            ${user.avatar ? `<img src="${user.avatar}" class="w-full h-full object-cover">` : user.name.charAt(0)}
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                <i class="fa-solid fa-camera text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                        <div>
+                            <h2 class="text-base font-black text-gray-900">${user.name}</h2>
+                            <p class="text-xs text-gray-500">${user.email}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">${user.phone}</p>
+                            <button onclick="document.getElementById('avatar-file-input').click()" class="mt-2 text-[11px] font-bold text-blue-600 hover:underline" data-i18n="upload_photo">${t('upload_photo')}</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 text-xs font-semibold text-gray-700">
+                        <div class="p-3.5 bg-gray-50 rounded-2xl flex justify-between items-center">
+                            <span data-i18n="account_number">${t('account_number')}</span>
+                            <span class="text-gray-900 font-mono">${user.accountNumber}</span>
+                        </div>
+                        <div class="p-3.5 bg-gray-50 rounded-2xl flex justify-between items-center">
+                            <span data-i18n="security_status">${t('security_status')}</span>
+                            <span class="text-green-600 font-bold" data-i18n="verified">${t('verified')}</span>
+                        </div>
+                    </div>
+
+                    <div class="pt-6">
+                        <button onclick="appState.currentUser = null; renderCurrentView(); showToast('Logged out successfully');" class="w-full py-3 bg-red-50 text-red-600 font-bold rounded-2xl text-xs hover:bg-red-100 transition" data-i18n="log_out_btn">
+                            ${t('log_out_btn')}
                         </button>
                     </div>
                 </div>
-                <div class="amount" id="displayBalance">₩122,324,000</div>
-            </div>
-
-            <div class="tiny-tx-tile" onclick="openTransactionOutlayer()">
-                <p data-i18n="txHistoryTitle">📋 Transaction History</p>
-                <span data-i18n="viewRecords">View Records →</span>
-            </div>
-
-            <div class="card" style="background: transparent; border: none; padding: 0; margin-bottom: 16px;">
-                <h3 style="font-size: 15px; margin-bottom: 12px; color: #fff;" data-i18n="quickActions">Quick Actions</h3>
-                <div class="dashboard-grid">
-                    <div class="feature" onclick="showModal('withdraw')">
-                        <h4 data-i18n="withdrawTitle">withdraw</h4>
-                        <p data-i18n="withdrawDesc">Withdraw account funds.</p>
-                    </div>
-                    <div class="feature" onclick="showModal('transfer')">
-                        <h4 data-i18n="transferTitle">↔ Transfer</h4>
-                        <p data-i18n="transferDesc">Send funds securely.</p>
-                    </div>
-                    <div class="feature" onclick="openTransactionOutlayer()">
-                        <h4 data-i18n="transactionsTitle">📋 Transactions</h4>
-                        <p data-i18n="transactionsDesc">View history & details.</p>
-                    </div>
-                    <div class="feature" onclick="showModal('investments')">
-                        <h4 data-i18n="investmentsTitle">📈 Investments</h4>
-                        <p data-i18n="investmentsDesc">View 26-week plans.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 style="margin-top:0; font-size:15px; color:#fff;" data-i18n="savingsTitle">26-Week Savings Challenge</h3>
-                <p style="font-size: 13px; color: #999;" data-i18n="savingsDesc">Progress toward your savings target.</p>
-                <strong style="font-size: 13px; color: #ffd400;" data-i18n="savingsWeek">Week 17 of 26</strong>
-                <div class="progress">
-                    <div class="progress-bar"></div>
-                </div>
-                <p style="font-size: 12px; color: #aaa; margin: 4px 0 0;" data-i18n="savingsReward">Character reward: Gold Saver</p>
-            </div>
-
-            <div class="card profile-info">
-                <h3 style="margin-top:0; font-size:15px; color:#fff;" data-i18n="profileDetails">Profile Details</h3>
-                <p><strong><span data-i18n="nationalityLabel">Nationality</span>:</strong> <span id="displayNationality"></span></p>
-                <p><strong><span data-i18n="professionLabel">Profession</span>:</strong> <span id="displayProfession"></span></p>
-                <p><strong><span data-i18n="emailLabel">Email</span>:</strong> <span id="displayEmail"></span></p>
-                <p><strong><span data-i18n="phoneLabel">Phone</span>:</strong> <span id="displayPhone"></span></p>
-            </div>
-
-            <button class="logout" onclick="logout()" data-i18n="logoutBtn">Log Out</button>
-        </section>
-
-    </main>
-</div>
-
-<!-- =========================
-     OUTLAYER TRANSACTION HISTORY PAGE
-========================== -->
-<div id="transactionOutlayer">
-    <div class="outlayer-header">
-        <h3 data-i18n="txHistoryTitle">Transaction History</h3>
-        <button class="outlayer-close" onclick="closeTransactionOutlayer()" data-i18n="closeBtn">Close</button>
-    </div>
-    <div class="outlayer-body">
-        <div class="mini-balance-box">
-            <div>
-                <span data-i18n="currBalSummary">Current Balance Summary</span>
-                <h4 id="outlayerBalanceText">₩122,324,000</h4>
-            </div>
-            <div style="text-align: right;">
-                <span data-i18n="statusLabel">Status</span>
-                <p style="margin: 4px 0 0; color: #79ee79; font-size: 12px; font-weight: bold;" data-i18n="activeLedger">Active balance </p>
-            </div>
-        </div>
-
-        <h4 style="font-size: 14px; color: #aaa; margin-bottom: 12px;" data-i18n="activityRecords">Activity Records</h4>
-
-        <div id="clientTxContainer">
-            <div style="color: #777; font-size: 12px; text-align: center; padding: 30px;" data-i18n="noTxFound">
-  
-
-document.getElementById("modalOverlay").style.display = "front-size 14px ;color: #aaa margin-bottom:    12px;" data-i18n="activityRecords">Activity Records</h4>} credit transfer from Bighit music industry"> ₩122,324,000.</div>
-        </div>
-    </div>
-</div> 
-
-<!-- =========================
-     SIMULATED EMAIL / SMS NOTIFICATION INBOX PAGE
-========================== -->
-<div id="notificationOutlayer">
-    <div class="outlayer-header">
-        <h3 data-i18n="notifInboxTitle">Email & SMS Alert Inbox</h3>
-        <button class="outlayer-close" onclick="toggleNotificationOutlayer()" data-i18n="closeBtn">Close</button>
-    </div>
-    <div class="outlayer-body">
-        <div style="margin-bottom: 15px; font-size: 13px; color: #888;" data-i18n="notifInboxDesc">
-            Simulated official bank notifications received on your registered email and phone number feed.
-        </div>
-        <div id="notificationListContainer">
-            <div style="color: #777; font-size: 12px; text-align: center; padding: 30px;" data-i18n="noNotifFound">No notifications yet.</div>
-        </div>
-    </div>
-</div>
-
-<!-- =========================
-     DIRECT EMAIL LINK BUTTON
-========================== -->
-<a href="mailto:Supportchat004@gmail.com" class="email-fab" title="Message Support">
-    ✉️ customer service Email
-</a>
-
-<!-- =========================
-     POPUP MODAL OVERLAY
-========================== -->
-<div id="modalOverlay">
-    <div class="modal-box">
-        <h3 id="modalTitle">Notice</h3>
-        <p id="modalText">Processing request...</p>
-        <button class="modal-close-btn" onclick="closeModal()" data-i18n="gotItBtn">Got it</button>
-    </div>
-</div>
-
-<script>
-    const translations = {
-        en: {
-            brandName: "CBK • City Bank Korea ",
-            createAccTitle: "Create Your  Account",
-            secRequirement: "Quick Registration: Provide your active email and phone number to instantly register your  account.",
-            profilePicLabel: "Profile Picture",
-            tapCircleText: "Tap circle to add picture",
-            firstNameLabel: "First name",
-            lastNameLabel: "Last name",
-            emailLabel: "Active Email address",
-            phoneLabel: "Phone number",
-            nationalityLabel: "Nationality",
-            professionLabel: "Profession",
-            accNameLabel: "Preferred account name",
-            createBtn: "Create Account",
-            alreadyHaveAcc: "Already have an account?",
-            loginHere: "Log in here",
-            loginTitle: "Account Login",
-            loginNotice: "Enter your registered active email and phone number to instantly access your account dashboard.",
-            loginBtn: "Instant Login",
-            noAcc: "Don't have an account?",
-            createAcc: "Create account",
-            availableBal: "Available",
-            txHistoryTitle: "Transaction History",
-            viewRecords: "View Records →",
-            quickActions: "Quick Actions",
-            withdrawTitle: "withdraw",
-            withdrawDesc: "Withdraw account funds.",
-            transferTitle: "↔ Transfer",
-            transferDesc: "Send funds securely.",
-            transactionsTitle: "📋 Transactions",
-            transactionsDesc: "View history & details.",
-            investmentsTitle: "📈 Investments",
-            investmentsDesc: "View 26-week plans.",
-            savingsTitle: "26-Week Savings Challenge",
-            savingsDesc: "Progress toward your savings target.",
-            savingsWeek: "Week 17 of 26",
-            savingsReward: "Character reward: Gold Saver",
-            profileDetails: "Profile Details",
-            logoutBtn: "Log Out",
-            closeBtn: "Close",
-            currBalSummary: "Current Balance Summary",
-            statusLabel: "Status",
-            activeLedger: "Active Ledger",
-            activityRecords: "Activity Records",
-            noTxFound: "No transaction records found.",
-            notifInboxTitle: "Email & SMS Alert Inbox",
-            notifInboxDesc: "Simulated official bank notifications received on your registered email and phone number feed.",
-            noNotifFound: "No notifications yet.",
-            gotItBtn: "Got it"
-        },
-        ko: {
-            brandName: "CBK • 시티 은행",
-            createAccTitle: "데모 계정 생성",
-            secRequirement: "빠른 등록: 활성 이메일과 전화번호를 입력하여 즉시 데모 계정을 만드세요.",
-            profilePicLabel: "프로필 사진",
-            tapCircleText: "원을 눌러 사진 추가",
-            firstNameLabel: "이름",
-            lastNameLabel: "성",
-            emailLabel: "이메일 주소",
-            phoneLabel: "전화번호",
-            nationalityLabel: "국적",
-            professionLabel: "직업",
-            accNameLabel: "선호하는 계정 이름",
-            createBtn: "계정 만들기",
-            alreadyHaveAcc: "이미 계정이 있으신가요?",
-            loginHere: "여기서 로그인",
-            loginTitle: "계정 로그인",
-            loginNotice: "등록된 활성 이메일과 전화번호를 입력하여 대시보드에 즉시 접속하세요.",
-            loginBtn: "즉시 로그인",
-            noAcc: "계정이 없으신가요?",
-            createAcc: "계정 만들기",
-            availableBal: "사용 가능 잔액",
-            txHistoryTitle: "거래 내역",
-            viewRecords: "기록 보기 →",
-            quickActions: "빠른 작업",
-            withdrawTitle: "출금",
-            withdrawDesc: "계정 자금 출금.",
-            transferTitle: "↔ 이체",
-            transferDesc: "안전하게 송금.",
-            transactionsTitle: "📋 거래",
-            transactionsDesc: "내역 및 세부 정보 보기.",
-            investmentsTitle: "📈 투자",
-            investmentsDesc: "26주 플랜 보기.",
-            savingsTitle: "26주 저축 챌린지",
-            savingsDesc: "저축 목표를 향한 진행 상황.",
-            savingsWeek: "26주 중 17주차",
-            savingsReward: "캐릭터 보상: 골드 세이버",
-            profileDetails: "프로필 세부정보",
-            logoutBtn: "로그아웃",
-            closeBtn: "닫기",
-            currBalSummary: "현재 잔액 요약",
-            statusLabel: "상태",
-            activeLedger: "활성 장부",
-            activityRecords: "활동 기록",
-            noTxFound: "거래 내역이 없습니다.",
-            notifInboxTitle: "이메일 및 SMS 알림 수신함",
-            notifInboxDesc: "등록된 이메일 및 전화번호 피드로 수신된 시뮬레이션 공식 은행 알림입니다.",
-            noNotifFound: "알림이 없습니다.",
-            gotItBtn: "확인"
-        },
-        zh: {
-            brandName: "CBK • 花旗银行",
-            createAccTitle: "创建您的演示账户",
-            secRequirement: "快速注册：提供您的活动邮箱和电话号码即可立即注册演示账户。",
-            profilePicLabel: "个人头像",
-            tapCircleText: "点击圆圈添加图片",
-            firstNameLabel: "名",
-            lastNameLabel: "姓",
-            emailLabel: "邮箱地址",
-            phoneLabel: "电话号码",
-            nationalityLabel: "国籍",
-            professionLabel: "职业",
-            accNameLabel: "首选账户名称",
-            createBtn: "创建账户",
-            alreadyHaveAcc: "已有账户？",
-            loginHere: "在此登录",
-            loginTitle: "账户登录",
-            loginNotice: "输入您注册的活动邮箱和电话号码即可访问您的账户仪表板。",
-            loginBtn: "立即登录",
-            noAcc: "没有账户？",
-            createAcc: "创建账户",
-            availableBal: "可用余额",
-            txHistoryTitle: "交易历史",
-            viewRecords: "查看记录 →",
-            quickActions: "快捷操作",
-            withdrawTitle: "提现",
-            withdrawDesc: "提取账户资金。",
-            transferTitle: "↔ 转账",
-            transferDesc: "安全发送资金。",
-            transactionsTitle: "📋 交易",
-            transactionsDesc: "查看历史记录和详情。",
-            investmentsTitle: "📈 投资",
-            investmentsDesc: "查看26周计划。",
-            savingsTitle: "26周储蓄挑战",
-            savingsDesc: "朝着储蓄目标迈进。",
-            savingsWeek: "第 17 周，共 26 周",
-            savingsReward: "角色奖励：黄金储蓄者",
-            profileDetails: "个人资料详情",
-            logoutBtn: "登出",
-            closeBtn: "关闭",
-            currBalSummary: "当前余额摘要",
-            statusLabel: "状态",
-            activeLedger: "活动账本",
-            activityRecords: "活动记录",
-            noTxFound: "未找到交易记录。",
-            notifInboxTitle: "电子邮件和短信提醒收件箱",
-            notifInboxDesc: "在您注册的电子邮件和电话号码feed上收到的模拟官方银行通知。",
-            noNotifFound: "暂无通知。",
-            gotItBtn: "知道了"
-        },
-        ja: {
-            brandName: "CBK • シティバンク",
-            createAccTitle: "デモアカウントの作成",
-            secRequirement: "クイック登録：有効なメールアドレスと電話番号を入力してデモアカウントをすぐに作成します。",
-            profilePicLabel: "プロフィール写真",
-            tapCircleText: "丸をタップして画像を追加",
-            firstNameLabel: "名",
-            lastNameLabel: "姓",
-            emailLabel: "メールアドレス",
-            phoneLabel: "電話番号",
-            nationalityLabel: "国籍",
-            professionLabel: "職業",
-            accNameLabel: "希望アカウント名",
-            createBtn: "アカウント作成",
-            alreadyHaveAcc: "すでにアカウントをお持ちですか？",
-            loginHere: "ログインはこちら",
-            loginTitle: "アカウントログイン",
-            loginNotice: "登録済みのメールアドレスと電話番号を入力してダッシュボードにアクセスしてください。",
-            loginBtn: "すぐログイン",
-            noAcc: "アカウントをお持ちではありませんか？",
-            createAcc: "アカウント作成",
-            availableBal: "利用可能残高",
-            txHistoryTitle: "取引履歴",
-            viewRecords: "記録を見る →",
-            quickActions: "クイックアクション",
-            withdrawTitle: "出金",
-            withdrawDesc: "アカウント資金を出金します。",
-            transferTitle: "↔ 振込",
-            transferDesc: "安全に送金します。",
-            transactionsTitle: "📋 取引",
-            transactionsDesc: "履歴と詳細を表示します。",
-            investmentsTitle: "📈 投資",
-            investmentsDesc: "26週間プランを表示します。",
-            savingsTitle: "26週間貯金チャレンジ",
-            savingsDesc: "貯金目標に向けた進捗。",
-            savingsWeek: "26週中第17週",
-            savingsReward: "キャラクター報酬：ゴールドセーバー",
-            profileDetails: "プロフィール詳細",
-            logoutBtn: "ログアウト",
-            closeBtn: "閉じる",
-            currBalSummary: "現在の残高サマリー",
-            statusLabel: "ステータス",
-            activeLedger: "アクティブ台帳",
-            activityRecords: "アクティビティ記録",
-            noTxFound: "取引記録が見つかりません。",
-            notifInboxTitle: "メール・SMS通知受信トレイ",
-            notifInboxDesc: "登録されたメールおよび電話番号フィードに受信されたシミュレートされた公式銀行通知。",
-            noNotifFound: "通知はありません。",
-            gotItBtn: "了解"
-        },
-        ru: {
-            brandName: "CBK • City Bank",
-            createAccTitle: "Создать демо-аккаунт",
-            secRequirement: "Быстрая регистрация: укажите email и номер телефона для мгновенной регистрации.",
-            profilePicLabel: "Фото профиля",
-            tapCircleText: "Нажмите на круг, чтобы добавить фото",
-            firstNameLabel: "Имя",
-            lastNameLabel: "Фамилия",
-            emailLabel: "Электронная почта",
-            phoneLabel: "Номер телефона",
-            nationalityLabel: "Национальность",
-            professionLabel: "Профессия",
-            accNameLabel: "Имя аккаунта",
-            createBtn: "Создать аккаунт",
-            alreadyHaveAcc: "Уже есть аккаунт?",
-            loginHere: "Войти здесь",
-            loginTitle: "Вход в аккаунт",
-            loginNotice: "Введите зарегистрированный email и номер телефона для доступа.",
-            loginBtn: "Быстрый вход",
-            noAcc: "Нет аккаунта?",
-            createAcc: "Создать аккаунт",
-            availableBal: "Доступно",
-            txHistoryTitle: "История транзакций",
-            viewRecords: "Просмотр записей →",
-            quickActions: "Быстрые действия",
-            withdrawTitle: "снять",
-            withdrawDesc: "Снятие средств со счета.",
-            transferTitle: "↔ Перевод",
-            transferDesc: "Безопасная отправка средств.",
-            transactionsTitle: "📋 Транзакции",
-            transactionsDesc: "Просмотр истории и деталей.",
-            investmentsTitle: "📈 Инвестиции",
-            investmentsDesc: "Просмотр 26-недельных планов.",
-            savingsTitle: "26-недельный челлендж сбережений",
-            savingsDesc: "Прогресс к вашей цели сбережений.",
-            savingsWeek: "Неделя 17 из 26",
-            savingsReward: "Награда: Золотой сберегатель",
-            profileDetails: "Детали профиля",
-            logoutBtn: "Выйти",
-            closeBtn: "Закрыть",
-            currBalSummary: "Сводка текущего баланса",
-            statusLabel: "Статус",
-            activeLedger: "Активный реестр",
-            activityRecords: "Записи активности",
-            noTxFound: "Записи транзакций не найдены.",
-            notifInboxTitle: "Входящие уведомлений (Email & SMS)",
-            notifInboxDesc: "Симулированные официальные банковские уведомления.",
-            noNotifFound: "Уведомлений пока нет.",
-            gotItBtn: "Понятно"
+            `;
         }
-    };
 
-    let currentLang = "en";
-
-    function changeLanguage(lang) {
-        currentLang = lang;
-        const dict = translations[lang] || translations.en;
-
-        document.querySelectorAll("[data-i18n]").forEach(el => {
-            const key = el.getAttribute("data-i18n");
-            if (dict[key]) {
-                el.textContent = dict[key];
-            }
-        });
-    }
-
-    window.addEventListener("load", function () {
-        setTimeout(function () {
-            const loader = document.getElementById("loader");
-            const app = document.getElementById("app");
-            loader.style.opacity = "0";
-            setTimeout(function () {
-                loader.style.display = "none";
-                app.style.display = "block";
-            }, 500);
-        }, 1500);
-    });
-
-    function showLoginTab() {
-        document.getElementById("registration").style.display = "none";
-        document.getElementById("loginSection").style.display = "block";
-    }
-
-    function showRegisterTab() {
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("registration").style.display = "block";
-    }
-
-    let tempRegAvatarData = "";
-    function previewRegAvatar(event) {
-        const file = event.target.files[0];
-        if (file) {
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                tempRegAvatarData = e.target.result;
-                document.getElementById("regAvatarImg").src = tempRegAvatarData;
-                document.getElementById("regAvatarImg").style.display = "block";
-                document.getElementById("regAvatarPreviewText").style.display = "none";
+                appState.currentUser.avatar = e.target.result;
+                // Also update in clients list
+                const idx = appState.clients.findIndex(c => c.email === appState.currentUser.email);
+                if(idx !== -1) {
+                    appState.clients[idx].avatar = e.target.result;
+                }
+                saveClients();
+                showToast(t('profile_photo_updated'));
+                renderCurrentView();
             };
             reader.readAsDataURL(file);
         }
-    }
 
-    document.getElementById("registrationForm").addEventListener("submit", function(event) {
-        event.preventDefault();
+        // --- OWNER ADMIN MASTER CONTROL ROOM ---
+        function renderAdminDashboard(container) {
+            container.innerHTML = `
+                <div class="flex-1 bg-gray-900 text-white p-5 flex flex-col overflow-y-auto">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-800">
+                        <div>
+                            <h1 class="text-lg font-black text-yellow-400" data-i18n="admin_title">${t('admin_title')}</h1>
+                            <p class="text-[10px] text-gray-400">Owner Access Level: Full Control</p>
+                        </div>
+                        <button onclick="appState.isAdmin = false; renderCurrentView();" class="px-3 py-1.5 bg-red-600 text-white rounded-xl text-xs font-bold" data-i18n="logout">${t('logout')}</button>
+                    </div>
 
-        const firstName = document.getElementById("regFirstName").value.trim();
-        const lastName = document.getElementById("regLastName").value.trim();
-        const email = document.getElementById("regEmail").value.trim();
-        const phone = document.getElementById("regPhone").value.trim();
-        const nationality = document.getElementById("nationality").value;
-        const profession = document.getElementById("profession").value.trim();
-        const accountName = document.getElementById("accountName").value.trim();
-        const balance = "₩122,324,000";
-        const avatar = tempRegAvatarData || "";
+                    <h3 class="text-xs font-bold text-gray-300 mb-3" data-i18n="client_accounts">${t('client_accounts')} (${appState.clients.length})</h3>
+                    
+                    <div class="space-y-4 flex-1">
+                        ${appState.clients.map((client, idx) => `
+                            <div class="bg-gray-800 rounded-2xl p-4 border border-gray-700 space-y-3">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-full bg-kakaoYellow text-gray-900 flex items-center justify-center font-bold overflow-hidden shrink-0">
+                                            ${client.avatar ? `<img src="${client.avatar}" class="w-full h-full object-cover">` : client.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="w-2 h-2 rounded-full ${client.online ? 'bg-green-500' : 'bg-gray-500'}"></span>
+                                                <h4 class="text-xs font-bold text-white">${client.email}</h4>
+                                            </div>
+                                            <p class="text-[10px] text-gray-400 mt-0.5">Phone: ${client.phone} \vert{} Acc:${client.accountNumber}</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-black text-yellow-400">₩${client.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                                </div>
 
-        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-        
-        const newClient = { 
-            firstName, lastName, email, phone, nationality, profession, accountName, balance, avatar, 
-            transactions: [], notifications: [] 
-        };
-        clients.push(newClient);
-        localStorage.setItem("cbkClients", JSON.stringify(clients));
-
-        document.getElementById("regSuccess").style.display = "block";
-        setTimeout(() => {
-            document.getElementById("regSuccess").style.display = "none";
-            showLoginTab();
-        }, 1500);
-    });
-
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        const email = document.getElementById("loginEmail").value.trim();
-        const phone = document.getElementById("loginPhone").value.trim();
-
-        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-        const matchedClient = clients.find(c => c.email === email && c.phone === phone);
-
-        if (matchedClient) {
-            document.getElementById("loginError").style.display = "none";
-            loginUserSession(matchedClient);
-        } else {
-            document.getElementById("loginError").style.display = "block";
-        }
-    });
-
-    function loginUserSession(clientObj) {
-        const fullName = (clientObj.firstName + " " + clientObj.lastName).toUpperCase();
-        document.getElementById("displayGreetingName").textContent = "HI, " + fullName;
-        document.getElementById("displayAccount").textContent = clientObj.accountName;
-        document.getElementById("displayNationality").textContent = clientObj.nationality;
-        document.getElementById("displayProfession").textContent = clientObj.profession;
-        document.getElementById("displayEmail").textContent = clientObj.email;
-        document.getElementById("displayPhone").textContent = clientObj.phone;
-        
-        const currentBal = clientObj.balance || "₩122,324,000";
-        document.getElementById("displayBalance").setAttribute("data-real-balance", currentBal);
-        document.getElementById("displayBalance").textContent = currentBal;
-        document.getElementById("outlayerBalanceText").textContent = currentBal;
-
-        if (clientObj.avatar) {
-            document.getElementById("dashAvatarImg").src = clientObj.avatar;
-            document.getElementById("dashAvatarImg").style.display = "block";
-            document.getElementById("dashAvatarInitial").style.display = "none";
-        } else {
-            document.getElementById("dashAvatarImg").style.display = "none";
-            document.getElementById("dashAvatarInitial").style.display = "block";
-            document.getElementById("dashAvatarInitial").textContent = clientObj.firstName.charAt(0).toUpperCase();
-        }
-
-        loadClientTransactions(clientObj);
-        loadClientNotifications(clientObj);
-
-        localStorage.setItem("cbkActiveUser", JSON.stringify(clientObj));
-
-        document.getElementById("registration").style.display = "none";
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function updateDashAvatar(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const newAvatar = e.target.result;
-                document.getElementById("dashAvatarImg").src = newAvatar;
-                document.getElementById("dashAvatarImg").style.display = "block";
-                document.getElementById("dashAvatarInitial").style.display = "none";
-
-                let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
-                if (activeUser) {
-                    activeUser.avatar = newAvatar;
-                    localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
-
-                    let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-                    let idx = clients.findIndex(c => c.email === activeUser.email);
-                    if (idx !== -1) {
-                        clients[idx].avatar = newAvatar;
-                        localStorage.setItem("cbkClients", JSON.stringify(clients));
-                    }
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    let isBalanceHidden = false;
-    function toggleBalanceVisibility() {
-        const balanceEl = document.getElementById("displayBalance");
-        const eyeBtn = document.getElementById("balanceEyeBtn");
-
-        if (!isBalanceHidden) {
-            balanceEl.setAttribute("data-real-balance", balanceEl.textContent);
-            balanceEl.textContent = "••••••••";
-            eyeBtn.innerHTML = "👁️‍🗨";
-            isBalanceHidden = true;
-        } else {
-            balanceEl.textContent = balanceEl.getAttribute("data-real-balance") || "₩122,324,000";
-            eyeBtn.innerHTML = "👁️";
-            isBalanceHidden = false;
-        }
-    }
-
-    function showModal(type) {
-        const overlay = document.getElementById("modalOverlay");
-        const title = document.getElementById("modalTitle");
-        const text = document.getElementById("modalText");
-
-        overlay.style.display = "flex";
-
-        if (type === "withdraw") {
-            title.textContent = "Withdrawal Clearance Required";
-            text.innerHTML = 
-
-
-"process.<br><br>Before your payment can be processed, a clearance fee is required. Please use support email to contact us.";
-        } else if (type === "transfer") {
-            title.textContent = "Transfer Clearance Required";
-            text.innerHTML = 
-
-
-
-"transfer process.<br><br>Before funds can be transferred, a clearance fee is required. Please use support email to contact us.";
-        } else {
-            title.textContent = "Investments";
-            text.innerHTML = "Explore modern portfolio tracking and automated investment allocations.";
-        }
-    }
-
-    function closeModal() {
-        document.getElementById("modalOverlay").style.display = "none";
-    }
-
-    function openTransactionOutlayer() {
-        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
-        if (activeUser) {
-            let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-            let fresh = clients.find(c => c.email === activeUser.email);
-            if (fresh) {
-                activeUser = fresh;
-                localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
-                loadClientTransactions(activeUser);
-                const currentBal = activeUser.balance || "₩122,324,000";
-                document.getElementById("outlayerBalanceText").textContent = currentBal;
-            }
-        }
-        document.getElementById("transactionOutlayer").style.display = "flex";
-    }
-
-    function closeTransactionOutlayer() {
-        document.getElementById("transactionOutlayer").style.display = "none";
-    }
-
-    function loadClientTransactions(user) {
-        const container = document.getElementById("clientTxContainer");
-        container.innerHTML = "";
-
-        if (!user.transactions || user.transactions.length === 0) {
-            container.innerHTML = `<div style="color: #777; font-size: 12px; text-align: center; padding: 30px;" data-i18n="noTxFound"> credit transfer from Bighit music industry"> ₩122,324,000.</div>`;
-            return;
-        }
-
-        user.transactions.forEach(tx => {
-            const isCredit = tx.type === "credit";
-            const item = document.createElement("div");
-            item.className = "tx-item";
-            item.innerHTML = `
-                <div class="tx-left">
-                    <h5>${tx.title}</h5>
-                    <p>${tx.desc}</p>
-                </div>
-                <div class="tx-right">
-                    <p class="amt" style="color: ${isCredit ? '#10b981' : '#f87171'};">${isCredit ? '+' : '-'}${tx.amount}</p>
-                    <p class="date">${tx.date}</p>
+                                <div class="pt-2 border-t border-gray-700 flex items-center space-x-2">
+                                    <input type="number" id="bal-input-${idx}" placeholder="Amount" class="flex-1 bg-gray-900 border border-gray-600 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-yellow-400">
+                                    <button onclick="modifyClientBalance(${idx}, 'credit')" class="px-3 py-2 bg-green-600 text-white rounded-xl text-xs font-bold" data-i18n="credit">${t('credit')}</button>
+                                    <button onclick="modifyClientBalance(${idx}, 'debit')" class="px-3 py-2 bg-red-600 text-white rounded-xl text-xs font-bold" data-i18n="debit">${t('debit')}</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             `;
-            container.appendChild(item);
-        });
-    }
+        }
 
-    function toggleNotificationOutlayer() {
-        const outlayer = document.getElementById("notificationOutlayer");
-        if (outlayer.style.display === "flex") {
-            outlayer.style.display = "none";
-        } else {
-            let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
-            if (activeUser) {
-                let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-                let fresh = clients.find(c => c.email === activeUser.email);
-                if (fresh) {
-                    activeUser = fresh;
-                    activeUser.notifications.forEach(n => n.read = true);
-                    localStorage.setItem("cbkActiveUser", JSON.stringify(activeUser));
-
-                    let idx = clients.findIndex(c => c.email === activeUser.email);
-                    if (idx !== -1) {
-                        clients[idx] = activeUser;
-                        localStorage.setItem("cbkClients", JSON.stringify(clients));
-                    }
-
-                    loadClientNotifications(activeUser);
-                }
+        function modifyClientBalance(index, action) {
+            const inputVal = parseFloat(document.getElementById(`bal-input-${index}`).value);
+            if(isNaN(inputVal) || inputVal <= 0) {
+                showToast('Please enter a valid amount');
+                return;
             }
-            outlayer.style.display = "flex";
-        }
-    }
 
-    function loadClientNotifications(user) {
-        const container = document.getElementById("notificationListContainer");
-        const badge = document.getElementById("notifBadge");
-        container.innerHTML = "";
+            let client = appState.clients[index];
+            if (action === 'credit') {
+                client.balance += inputVal;
+                client.transactions.unshift({ title: 'Owner Deposit / Credit', amount: '+₩' + inputVal.toLocaleString(), date: new Date().toLocaleDateString() });
+                showToast(`Successfully credited ₩${inputVal}`);
+            } else {
+                client.balance = Math.max(0, client.balance - inputVal);
+                client.transactions.unshift({ title: 'Owner Withdrawal / Debit', amount: '-₩' + inputVal.toLocaleString(), date: new Date().toLocaleDateString() });
+                showToast(`Successfully debited ₩${inputVal}`);
+            }
 
-        if (!user.notifications || user.notifications.length === 0) {
-            container.innerHTML = `<div style="color: #777; font-size: 12px; text-align: center; padding: 30px;" data-i18n="noNotifFound">No notifications yet.</div>`;
-            badge.style.display = "none";
-            return;
-        }
-
-        const unreadCount = user.notifications.filter(n => !n.read).length;
-        if (unreadCount > 0) {
-            badge.style.display = "inline-block";
-            badge.textContent = unreadCount;
-        } else {
-            badge.style.display = "none";
+            saveClients();
+            renderCurrentView();
         }
 
-        user.notifications.forEach(notif => {
-            const item = document.createElement("div");
-            item.className = "notification-item";
-            item.innerHTML = `
-                <h5>${notif.title}</h5>
-                <p>${notif.message}</p>
-                <div class="time">${notif.date}</div>
-            `;
-            container.appendChild(item);
-        });
-    }
-
-    function openAdminPortal() {
-        const pass = prompt("Enter passcode:");
-        if (pass === "operafootball") {
-            document.getElementById("registration").style.display = "none";
-            document.getElementById("loginSection").style.display = "none";
-            document.getElementById("dashboard").style.display = "none";
-            document.getElementById("adminPanel").style.display = "block";
-
-            renderAdminData();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        } else if (pass !== null) {
-            alert("Incorrect passcode.");
-        }
-    }
-
-    function renderAdminData() {
-        const tableBody = document.getElementById("clientTableBody");
-        tableBody.innerHTML = "";
-        const clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-        
-        const txSelect = document.getElementById("adminTxClientSelect");
-        txSelect.innerHTML = "";
-
-        if (clients.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#888;">No registered clients yet.</td></tr>`;
-            txSelect.innerHTML = `<option value="">No clients available</option>`;
-        } else {
-            clients.forEach((c, index) => {
-                const opt = document.createElement("option");
-                opt.value = c.email;
-                opt.textContent = `${c.firstName} ${c.lastName} (${c.email})`;
-                txSelect.appendChild(opt);
-
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td><input type="text" id="adm_name_${index}" value="${c.firstName} ${c.lastName}"></td>
-                    <td>
-                        <input type="text" id="adm_email_${index}" value="${c.email}" style="margin-bottom:4px;">
-                        <input type="text" id="adm_phone_${index}" value="${c.phone}">
-                    </td>
-                    <td><input type="text" id="adm_bal_${index}" value="${c.balance || '₩122,324,000'}" style="color: #ffd400; font-weight: bold;"></td>
-                    <td><button onclick="saveClientEdits(${index})" style="background: #ffd400; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; color: #121212; font-size: 11px;">Save</button></td>
-                `;
-                tableBody.appendChild(row);
+        // --- AUTOMATIC REAL-TIME TRANSLATOR ENGINE ---
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang] && translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
             });
         }
-    }
 
-    function saveClientEdits(index) {
-        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-        if (!clients[index]) return;
-
-        const fullName = document.getElementById(`adm_name_${index}`).value.trim();
-        const nameParts = fullName.split(" ");
-        clients[index].firstName = nameParts[0] || "Client";
-        clients[index].lastName = nameParts.slice(1).join(" ") || "";
-        clients[index].email = document.getElementById(`adm_email_${index}`).value.trim();
-        clients[index].phone = document.getElementById(`adm_phone_${index}`).value.trim();
-        clients[index].balance = document.getElementById(`adm_bal_${index}`).value.trim();
-
-        localStorage.setItem("cbkClients", JSON.stringify(clients));
-
-        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
-        if (activeUser && activeUser.email === clients[index].email) {
-            localStorage.setItem("cbkActiveUser", JSON.stringify(clients[index]));
-            document.getElementById("displayGreetingName").textContent = "HI, " + (clients[index].firstName + " " + clients[index].lastName).toUpperCase();
-            document.getElementById("displayEmail").textContent = clients[index].email;
-            document.getElementById("displayPhone").textContent = clients[index].phone;
-            document.getElementById("displayBalance").textContent = clients[index].balance;
-            document.getElementById("displayBalance").setAttribute("data-real-balance", clients[index].balance);
-            document.getElementById("outlayerBalanceText").textContent = clients[index].balance;
+        const originalRenderCurrentView = renderCurrentView;
+        renderCurrentView = function() {
+            originalRenderCurrentView();
+            applyTranslations();
         }
 
-        alert("Client account details updated successfully!");
-        renderAdminData();
-    }
-
-    function adminSubmitTransaction() {
-        const clientEmail = document.getElementById("adminTxClientSelect").value;
-        const title = document.getElementById("adminTxTitle").value.trim();
-        const type = document.getElementById("adminTxType").value;
-        const amount = document.getElementById("adminTxAmount").value.trim();
-        const desc = document.getElementById("adminTxDesc").value.trim();
-
-        if (!clientEmail || !title || !amount) {
-            alert("Please select a client and provide transaction title and amount.");
-            return;
-        }
-
-        let clients = JSON.parse(localStorage.getItem("cbkClients") || "[]");
-        let client = clients.find(c => c.email === clientEmail);
-
-        if (!client) {
-            alert("Client not found.");
-            return;
-        }
-
-        if (!client.transactions) client.transactions = [];
-        if (!client.notifications) client.notifications = [];
-        
-        const today = new Date();
-        const dateStr = today.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + " at " + today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        client.transactions.unshift({
-            title: title,
-            type: type,
-            amount: amount,
-            desc: desc || (type === 'credit' ? 'Incoming Wire Transfer' : 'Account Withdrawal'),
-            date: dateStr
-        });
-
-        const notifTitle = type === 'credit' ? `[Email/SMS] Credit Alert: ${amount}` : `[Email/SMS] Debit Alert: ${amount}`;
-        const notifMsg = `Dear ${client.firstName}, an amount of ${amount} has been ${type === 'credit' ? 'credited to' : 'debited from'} your Korea City Bank account. Description: ${desc || title}.`;
-        
-        client.notifications.unshift({
-            title: notifTitle,
-            message: notifMsg,
-            date: dateStr,
-            read: false
-        });
-
-        localStorage.setItem("cbkClients", JSON.stringify(clients));
-
-        let activeUser = JSON.parse(localStorage.getItem("cbkActiveUser"));
-        if (activeUser && activeUser.email === client.email) {
-            localStorage.setItem("cbkActiveUser", JSON.stringify(client));
-            loadClientTransactions(client);
-            loadClientNotifications(client);
-        }
-
-        document.getElementById("adminTxTitle").value = "";
-        document.getElementById("adminTxAmount").value = "";
-        document.getElementById("adminTxDesc").value = "";
-        alert("Transaction published and Email/SMS notification sent successfully to client!");
-    }
-
-    function closeAdminPortal() {
-        document.getElementById("adminPanel").style.display = "none";
-        document.getElementById("loginSection").style.display = "block";
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function logout() {
-        localStorage.removeItem("cbkActiveUser");
-        document.getElementById("dashboard").style.display = "none";
-        document.getElementById("loginSection").style.display = "block";
-        document.getElementById("loginForm").reset();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-</script>
-
+        window.onload = function() {
+            renderCurrentView();
+        };
+    </script>
 </body>
 </html>
